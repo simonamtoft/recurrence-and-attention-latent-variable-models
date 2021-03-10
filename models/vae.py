@@ -61,10 +61,9 @@ class BetaDecoder(nn.Module):
                 nn.Linear(neuron_dims[i - 1], neuron_dims[i]),
                 nn.Tanh(),
             )
-        layers.append(
-            nn.Linear(neuron_dims[i], x_dim),
-            nn.Sigmoid(),
-        )
+        # reconstruction and activation function
+        layers.append(nn.Linear(neuron_dims[i], x_dim))
+        layers.append(nn.Sigmoid())
         self.hidden = nn.Sequential(*layers)
 
 
