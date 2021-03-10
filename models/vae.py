@@ -63,7 +63,7 @@ class BetaDecoder(nn.Module):
             )
         layers.append(
             nn.Linear(neuron_dims[i], x_dim),
-            nn.Tanh(),
+            nn.Sigmoid(),
         )
         self.hidden = nn.Sequential(*layers)
 
@@ -122,12 +122,12 @@ class VariationalAutoencoder(nn.Module):
         # Define encoder 
         self.encoder = Encoder([x_dim, h_dim, z_dim])
         
-
         # Define decoder
+        dec_dim = [z_dim, list(reversed(h_dim)), x_dim]
         if as_beta:
-            self.decoder = BetaDecoder([z_dim, list(reversed(h_dim)), x_dim])
+            self.decoder = BetaDecoder(dec_dim)
         else: 
-            self.decoder = Decoder([z_dim, list(reversed(h_dim)), x_dim])
+            self.decoder = Decoder(dec_dim)
 
 
         # The KL-Divergence
