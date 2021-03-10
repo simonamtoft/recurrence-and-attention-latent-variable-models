@@ -9,11 +9,9 @@ from inference import log_gaussian, log_standard_gaussian
 
 
 class Encoder(nn.Module):
-    """
-        Inference Network.
-
-        Infer the probability distribtuion p(z|x) from the data by
-        fitting a variational distribtuion q(z|x).
+    """Inference Network
+    Infer the probability distribtuion p(z|x) from the data by
+    fitting a variational distribtuion q(z|x).
     
     Inputs:
         dims (array) :  Dimensions of the networks on the form 
@@ -45,10 +43,34 @@ class Encoder(nn.Module):
         return self.sample(x)
 
 
-class Decoder(nn.Module):
+class BetaDecoder(nn.Module):
+    """Generative network for the Beta VAE.
+    Generate samples from the original distribution p(x).
     """
-        Generative network.
-        Generate samples from the original distribution p(x).
+    def __init__(self, dims):
+        super(BetaDecoder, self).__init__()
+
+        # Setup network dimensions
+        [z_dim, h_dim, x_dim] = dims
+        neuron_dims = [z_dim, *h_dim]
+
+        # Define hidden layer as a stack of linear and Tanh layers
+        layers = []
+        for i in range(1, len(neuron_dims)):
+            layers.append(
+                nn.Linear(neuron_dims[i - 1], neuron_dims[i]),
+                nn.Tanh(),
+            )
+        layers.append(
+            nn.Linear(neuron_dims[i], x_dim),
+            nn.Tanh(),
+        )
+        self.hidden = nn.Sequential(*layers)
+
+
+class Decoder(nn.Module):
+    """Generative network.
+    Generate samples from the original distribution p(x).
     
     Inputs:
         dims (array) :  Dimensions of the networks on the form
@@ -97,9 +119,18 @@ class VariationalAutoencoder(nn.Module):
         # setup network dimensions
         [x_dim, z_dim, h_dim] = dims
 
-        # Define encoder/decoder pair 
+        # Define encoder 
         self.encoder = Encoder([x_dim, h_dim, z_dim])
-        self.decoder = Decoder([z_dim, list(reversed(h_dim)), x_dim])
+        
+
+        # Define decoder
+        if as_beta:
+            self.decoder = BetaDecoder([z_dim, list(reversed(h_dim)), x_dim])
+        else: 
+            self.decoder = Decoder([z_dim, list(reversed(h_dim)), x_dim])
+
+
+        # The KL-Divergence
         self.kld = 0
 
         # zero out the biases
@@ -108,19 +139,6 @@ class VariationalAutoencoder(nn.Module):
                 init.xavier_normal(m.weight.data)
                 if m.bias is not None:
                     m.bias.data.zero_()
-
-        # change to beta VAE
-        if as_beta:
-            self.decoder = nn.Sequential(
-                nn.Linear(z_dim, h_dim[0]),
-                nn.Tanh(),
-                nn.Linear(h_dim[0], h_dim[1]),
-                nn.Tanh(),
-                nn.Linear(h_dim[1], h_dim[1]),
-                nn.Tanh(),
-                nn.Linear(h_dim[1], x_dim),
-                nn.Sigmoid(),
-            )
 
 
     def _kld(self, z, q_param, p_param=None):
