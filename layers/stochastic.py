@@ -41,3 +41,21 @@ class GaussianSample(nn.Module):
 
         return reparametrize(mu, log_var), mu, log_var
 
+
+class GaussianMerge(GaussianSample):
+    """ Weighted merging of two Gaussian distributions """
+    def __init__(self, in_features, out_features):
+        super(GaussianMerge, self).__init__(in_features, out_features)
+    
+    def forward(self, z, mu_1, log_var_1):
+        mu_2 = self.mu(z)
+        log_var_2 = F.softplus(self.log_var(z))
+        p1 = 1 / torch.exp(log_var_1)
+        p2 = 1 / torch.exp(log_var_2)
+
+        # merge distributions
+        mu = (mu_1 * p1 + mu_2 * p2) / (p1 + p2)
+        log_var = torch.log(1 / (p1 + p2) + 1e-8)
+        
+        return reparametrize(mu, log_var), mu, log_var
+
