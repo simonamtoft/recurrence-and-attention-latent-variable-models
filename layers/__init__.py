@@ -1,1 +1,1 @@
-from .stochastic import GaussianSample, reparametrize
+from .stochastic import GaussianSample, GaussianMerge, reparametrize
