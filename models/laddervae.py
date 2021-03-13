@@ -72,14 +72,14 @@ class Decoder(nn.Module):
         self.sample = GaussianSample(h_dim, z_dim)
 
     def forward(self, x, l_mu=None, l_log_var=None):
-        if l_mu is None:
-            z = F.leaky_relu(
-                self.batch_norm_1(
-                    self.linear_1(z)
-                ),
-                0.1
-            )
-            q_z, q_mu, q_log_var = self.merge(z, l_mu, l_log_var)
+        # if l_mu is None:
+        z = F.leaky_relu(
+            self.batch_norm_1(
+                self.linear_1(z)
+            ),
+            0.1
+        )
+        q_z, q_mu, q_log_var = self.merge(z, l_mu, l_log_var)
         
         # sample from decoder
         z = F.leaky_relu(
