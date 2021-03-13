@@ -7,7 +7,7 @@ from torch.nn import init
 from layers import GaussianSample, GaussianMerge
 from inference import log_gaussian, log_standard_gaussian
 
-from vae import VariationalAutoencoder
+from models import VariationalAutoencoder
 
 
 class ReconstructionDecoder(nn.Module):
@@ -58,6 +58,7 @@ class Decoder(nn.Module):
     """
 
     def __init__(self, dims):
+        super(Decoder, self).__init__()
         [z_dim, h_dim, x_dim] = dims
 
         # part 1
@@ -101,7 +102,6 @@ class LadderVAE(VariationalAutoencoder):
         [x_dim, z_dim, h_dim] = dims
         super(LadderVAE, self).__init__([x_dim, z_dim[0], h_dim])
 
-
         # define encoder and decoder layers
         neuron_dims = [x_dim, *h_dim]
         encoder_layers = [
@@ -121,7 +121,7 @@ class LadderVAE(VariationalAutoencoder):
         # zero out bias
         for m in self.modules():
             if isinstance(m, nn.Linear):
-                init.xavier_normal(m.weight.data)
+                init.xavier_normal_(m.weight.data)
                 if m.bias is not None:
                     m.bias.data.zero_()
     
