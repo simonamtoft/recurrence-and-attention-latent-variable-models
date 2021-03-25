@@ -18,7 +18,10 @@ class ReconstructionDecoder(nn.Module):
         [z_dim, h_dim, x_dim] = dims
 
         neurons = [z_dim, *h_dim]
-        linear_layers = [nn.Linear(neurons[i-1], neurons[i]) for i in range(1, len(neurons))]
+        linear_layers = [
+            nn.Linear(neurons[i-1], neurons[i]) 
+            for i in range(1, len(neurons))
+        ]
         self.hidden = nn.ModuleList(linear_layers)
 
         self.reconstruction = nn.Linear(h_dim[-1], x_dim)
@@ -33,6 +36,10 @@ class ReconstructionDecoder(nn.Module):
 class Encoder(nn.Module):
     """ Ladder encoder
     Differs from standard encoder by using batch-norm and LReLU activation.
+
+    input
+        dims    :   Array of input, hidden and latent dims. 
+
     """
     def __init__(self, dims):
         super(Encoder, self).__init__()

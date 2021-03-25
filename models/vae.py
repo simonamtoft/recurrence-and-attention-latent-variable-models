@@ -9,7 +9,10 @@ from inference import log_gaussian, log_standard_gaussian
 
 
 class Encoder(nn.Module):
-    """Inference Network
+    """ Inference Network
+    Encode the observation `x` into the parameters of the posterior distribution
+    `q_\phi(z|x) = N(z | \mu(x), \sigma(x)), \mu(x),\log\sigma(x) = h_\phi(x)`
+    
     Infer the probability distribtuion p(z|x) from the data by
     fitting a variational distribtuion q(z|x).
     
@@ -27,11 +30,10 @@ class Encoder(nn.Module):
         neuron_dims = [x_dim, *h_dim]
 
         # Define the hidden layer as a stack of linear layers
-        linear_layers = []
-        for i in range(1, len(neuron_dims)):
-            linear_layers.append(
-                nn.Linear(neuron_dims[i - 1], neuron_dims[i])
-            )
+        linear_layers = [
+            nn.Linear(neuron_dims[i-1], neuron_dims[i]) 
+            for i in range(1, len(neuron_dims))
+        ]
         self.hidden = nn.ModuleList(linear_layers)
 
         # Define sampling function
@@ -92,11 +94,10 @@ class Decoder(nn.Module):
         neuron_dims = [z_dim, *h_dim]
 
         # Define the hidden layer as a stack of linear layers
-        linear_layers = []
-        for i in range(1, len(neuron_dims)):
-            linear_layers.append(
-                nn.Linear(neuron_dims[i - 1], neuron_dims[i])
-            )
+        linear_layers = [
+            nn.Linear(neuron_dims[i-1], neuron_dims[i]) 
+            for i in range(1, len(neuron_dims))
+        ]
         self.hidden = nn.ModuleList(linear_layers)
 
         # Define reconstruction layer and activation function
@@ -115,17 +116,17 @@ class VariationalAutoencoder(nn.Module):
 
     Inputs:
         dims (array) :  Dimensions of the networks on the form
-                        [input_dim, latent_dim, [hidden_dims]]
+                        [input_dim, [hidden_dims], latent_dim]
          
     """
 
     def __init__(self, dims, as_beta=False):
         super(VariationalAutoencoder, self).__init__()
         # setup network dimensions
-        [x_dim, z_dim, h_dim] = dims
+        [x_dim, h_dim, z_dim] = dims
 
         # Define encoder 
-        self.encoder = Encoder([x_dim, h_dim, z_dim])
+        self.encoder = Encoder(dims)
         
         # Define decoder
         dec_dim = [z_dim, list(reversed(h_dim)), x_dim]
@@ -176,11 +177,12 @@ class VariationalAutoencoder(nn.Module):
     def forward(self, x):
         """
             Run datapoint through model to reconstruct input
-        Inputs:
-            x       : input data
 
-        Returns:
-            x_mu    : reconstructed input
+        Inputs
+            x       :   input data
+
+        Returns
+            x_mu    :   reconstructed input
         """
         # fit q(z|x) to x
         z, z_mu, z_log_var = self.encoder(x)

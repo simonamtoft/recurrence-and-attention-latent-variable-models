@@ -45,9 +45,9 @@ def get_mnist(location="./MNIST", batch_size=64):
 
     # <<< HTTP Error 403 >>> FIXED 
     # https://stackoverflow.com/questions/60548000/getting-http-error-403-forbidden-error-when-download-mnist-dataset 
-    opener = urllib.request.build_opener()
-    opener.addheader = ('User-agent', 'Mozilla/5.0 Chrome/35.0.1916.47')
-    urllib.request.install_opener(opener)
+    # opener = urllib.request.build_opener()
+    # opener.addheader = ('User-agent', 'Mozilla/5.0 Chrome/35.0.1916.47')
+    # urllib.request.install_opener(opener)
 
     # Download the train and validation data
     train = MNIST(
