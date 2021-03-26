@@ -195,8 +195,8 @@ class VariationalAutoencoder(nn.Module):
         return x_mu
 
     def sample(self, z):
-        """
-            Given a z ~ N(0, I) it generates a sample from the 
-            learned distribution based on p_theta(x|z)
+        """ Sampling from model
+        Given a z ~ N(0, I) it generates a sample from the 
+        learned distribution based on p_theta(x|z)
         """
         return self.decoder(z)
