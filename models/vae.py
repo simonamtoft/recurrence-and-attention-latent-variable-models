@@ -82,7 +82,7 @@ class Decoder(nn.Module):
     Inputs:
         dims (array) :  Dimensions of the networks on the form
                         [latent_dim, [hidden_dims], input_dim] 
-    
+
     Returns:
         decoded x
     """
