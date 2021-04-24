@@ -16,6 +16,14 @@ from torch.distributions import Normal
 from torch.distributions.kl import kl_divergence
 
 
+def sigmoid(x):
+    return torch.where(
+        x >= 0, 
+        1 / (1 + torch.exp(-x)), 
+        torch.exp(x) / (1 + torch.exp(x))
+    )
+
+
 class BaseAttention(nn.Module):
     """ No attention module """
     def __init__(self, h_dim, x_dim):
