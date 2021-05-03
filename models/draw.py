@@ -101,7 +101,6 @@ class FilterbankAttention(nn.Module):
             self.A, self.B, log_var, gt_X, gt_Y, log_dt, self.N)
         x_filt = gamma * F_Y * x * F_X.T
         x_hat_filt = gamma * F_Y * x_hat * F_X.T
-
         return torch.cat([x_filt, x_hat_filt], dim=1)
 
     def write(self, h_dec):
@@ -113,7 +112,7 @@ class FilterbankAttention(nn.Module):
 
 
 class DRAW(nn.Module):
-    def __init__(self, x_dim, h_dim, z_dim, T=10, attention=BaseAttention):
+    def __init__(self, x_dim, h_dim, z_dim, T=10, x_shape=None):
         super(DRAW, self).__init__()
         self.h_dim = h_dim
         self.x_dim = x_dim
@@ -129,7 +128,10 @@ class DRAW(nn.Module):
         self.decoder = nn.LSTMCell(z_dim, h_dim)
 
         # define attention module
-        self.attention = attention(h_dim, x_dim)
+        if x_shape == None:
+            self.attention = BaseAttention(h_dim, x_dim)
+        else:
+            self.attention = FilterbankAttention(h_dim, x_dim, x_shape)
 
     def forward(self, x):
         batch_size = x.size(0)
