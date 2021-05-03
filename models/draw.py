@@ -42,20 +42,20 @@ def compute_filterbanks(A, B, log_var, gt_X, gt_Y, log_dt, N):
     )
     
     # compute filters
-    F_X = torch.zeros((N, A))
-    F_Y = torch.zeros((N, B))
+    F_X = torch.zeros((N, A)).to('cuda:0')
+    F_Y = torch.zeros((N, B)).to('cuda:0')
 
     # construct mean vectors
     mu_X = torch.linspace(
         g_X + (- N/2 - 0.5) * d, 
         g_X + (N-1 - N/2 - 0.5) * d,
         N
-    )
+    ).to('cuda:0')
     mu_Y = torch.linspace(
         g_Y + (- N/2 - 0.5) * d, 
         g_Y + (N-1 - N/2 - 0.5) * d,
         N
-    )
+    ).to('cuda:0')
 
     # Compute filter matrices
     for a in range(A):
@@ -91,7 +91,7 @@ class FilterbankAttention(nn.Module):
         super(FilterbankAttention, self).__init__()
         self.h_dim = h_dim
         self.x_dim = x_dim
-        self.N = 10
+        self.N = 16
         self.A = x_shape[0]
         self.B = x_shape[1]
         self.W_read = nn.Linear(h_dim, 5)
@@ -99,15 +99,23 @@ class FilterbankAttention(nn.Module):
 
     def read(self, x, x_hat, h):
         """ Performs the read operation with attention """
-        params = self.W_read(h)
+        params = self.W_read(h)[0]
         gamma = torch.exp(params[4])
-        
+
+        # reshape x
+        x = torch.reshape(x, (-1, self.A, self.B))
+        x_hat = torch.reshape(x_hat, (-1, self.A, self.B))
+
         # filter x and x_hat
         F_X, F_Y = compute_filterbanks(
             self.A, self.B, params[2], fix_param(params[0]), 
             fix_param(params[1]), params[3], self.N)
-        x_filt = gamma * F_Y * x * F_X.T
-        x_hat_filt = gamma * F_Y * x_hat * F_X.T
+        x_filt = gamma * torch.matmul(torch.matmul(F_Y, x), F_X.T)
+        x_hat_filt = gamma * torch.matmul(torch.matmul(F_Y, x_hat), F_X.T)
+
+        # reshape back again
+        x_filt = torch.reshape(x_filt, (-1, self.N**2))
+        x_hat_filt = torch.reshape(x_hat_filt, (-1, self.N**2))
         return torch.cat([x_filt, x_hat_filt], dim=1)
 
     def write(self, h_dec):
@@ -167,6 +175,8 @@ class DRAW(nn.Module):
 
             # use attention to read image
             r_t = self.attention.read(x, x_hat, h_dec)
+            print(r_t.shape)
+            print(h_dec.shape)
 
             # pass throuygh encoder
             h_enc, c_enc = self.encoder(
