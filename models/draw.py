@@ -24,6 +24,10 @@ def sigmoid(x):
     )
 
 
+def fix_param(param):
+    return param.cpu().detach().numpy()
+
+
 def compute_filterbanks(A, B, log_var, gt_X, gt_Y, log_dt, N):
     # retrieve non-log versions
     var = torch.exp(log_var + 1e-8)
@@ -33,7 +37,9 @@ def compute_filterbanks(A, B, log_var, gt_X, gt_Y, log_dt, N):
     g_Y = (B + 1) * (gt_Y + 1) / 2
 
     # calculate stride
-    d = (torch.exp(log_dt) * (np.max([A, B]) - 1) / (N - 1)).cpu().numpy()
+    d = fix_param(
+        torch.exp(log_dt) * (np.max([A, B]) - 1) / (N - 1)
+    )
     
     # compute filters
     F_X = torch.zeros((N, A))
@@ -62,10 +68,6 @@ def compute_filterbanks(A, B, log_var, gt_X, gt_Y, log_dt, N):
     F_X = F_X / torch.sum(F_X)
     F_Y = F_Y / torch.sum(F_Y)
     return F_X, F_Y
-
-
-def fix_param(param):
-    return param.cpu().detach().numpy()
 
 
 class BaseAttention(nn.Module):
