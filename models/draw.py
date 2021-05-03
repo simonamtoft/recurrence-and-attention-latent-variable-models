@@ -64,6 +64,10 @@ def compute_filterbanks(A, B, log_var, gt_X, gt_Y, log_dt, N):
     return F_X, F_Y
 
 
+def fix_param(param):
+    return param.cpu().detach().numpy()
+
+
 class BaseAttention(nn.Module):
     """ No attention module """
     def __init__(self, h_dim, x_dim):
@@ -98,8 +102,8 @@ class FilterbankAttention(nn.Module):
         
         # filter x and x_hat
         F_X, F_Y = compute_filterbanks(
-            self.A, self.B, params[2], params[0].cpu().numpy(), 
-            params[1].cpu().numpy(), params[3], self.N)
+            self.A, self.B, params[2], fix_param(params[0]), 
+            fix_param(params[1]), params[3], self.N)
         x_filt = gamma * F_Y * x * F_X.T
         x_hat_filt = gamma * F_Y * x_hat * F_X.T
         return torch.cat([x_filt, x_hat_filt], dim=1)
@@ -107,8 +111,8 @@ class FilterbankAttention(nn.Module):
     def write(self, h_dec):
         params = self.W_read(h_dec)
         F_X, F_Y = compute_filterbanks(
-            self.A, self.B, params[2], params[0].cpu().numpy(), 
-            params[1].cpu().numpy(), params[3], self.N)
+            self.A, self.B, params[2], fix_param(params[0]), 
+            fix_param(params[1]), params[3], self.N)
         w_t = self.W_write(h_dec)
         return F_Y.T * w_t * F_X / torch.exp(params[4])
 
