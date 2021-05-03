@@ -26,26 +26,26 @@ def sigmoid(x):
 
 def compute_filterbanks(A, B, log_var, gt_X, gt_Y, log_dt, N):
     # retrieve non-log versions
-    var = np.exp(log_var + 1e-8)
+    var = torch.exp(log_var + 1e-8)
 
     # calculate grid center
     g_X = (A + 1) * (gt_X + 1) / 2
     g_Y = (B + 1) * (gt_Y + 1) / 2
 
     # calculate stride
-    d = np.exp(log_dt) * (np.max([A, B]) - 1) / (N - 1)
+    d = torch.exp(log_dt) * (np.max([A, B]) - 1) / (N - 1)
     
     # compute filters
-    F_X = np.zeros((N, A))
-    F_Y = np.zeros((N, B))
+    F_X = torch.zeros((N, A))
+    F_Y = torch.zeros((N, B))
 
     # construct mean vectors
-    mu_X = np.linspace(
+    mu_X = torch.linspace(
         g_X + (- N/2 - 0.5) * d, 
         g_X + (N-1 - N/2 - 0.5) * d,
         N
     )
-    mu_Y = np.linspace(
+    mu_Y = torch.linspace(
         g_Y + (- N/2 - 0.5) * d, 
         g_Y + (N-1 - N/2 - 0.5) * d,
         N
@@ -53,14 +53,14 @@ def compute_filterbanks(A, B, log_var, gt_X, gt_Y, log_dt, N):
 
     # Compute filter matrices
     for a in range(A):
-        F_X[:, a] = np.exp( -(a - mu_X)**2 / (2 * var))
+        F_X[:, a] = torch.exp( -(a - mu_X)**2 / (2 * var))
 
     for b in range(B):
-        F_Y[:, b] = np.exp( -(b - mu_Y)**2 / (2 * var))
+        F_Y[:, b] = torch.exp( -(b - mu_Y)**2 / (2 * var))
 
     # normalize filters (should each sum to 1)
-    F_X = F_X / np.sum(F_X)
-    F_Y = F_Y / np.sum(F_Y)
+    F_X = F_X / torch.sum(F_X)
+    F_Y = F_Y / torch.sum(F_Y)
     return F_X, F_Y
 
 
@@ -94,7 +94,7 @@ class FilterbankAttention(nn.Module):
     def read(self, x, x_hat, h):
         """ Performs the read operation with attention """
         params = self.W_read(h)
-        gamma = np.exp(params[4])
+        gamma = torch.exp(params[4].cpu())
         
         # filter x and x_hat
         F_X, F_Y = compute_filterbanks(
@@ -108,7 +108,7 @@ class FilterbankAttention(nn.Module):
         F_X, F_Y = compute_filterbanks(
             self.A, self.B, params[2], params[0], params[1], params[3], self.N)
         w_t = self.W_write(h_dec)
-        return F_Y.T * w_t * F_X / np.exp(params[4])
+        return F_Y.T * w_t * F_X / torch.exp(params[4])
 
 
 class DRAW(nn.Module):
