@@ -82,7 +82,7 @@ class BaseAttention(nn.Module):
 class FilterbankAttention(nn.Module):
     """ Attention module using Filterbank matrices """
     def __init__(self, h_dim, x_dim, x_shape):
-        super(BaseAttention, self).__init__()
+        super(FilterbankAttention, self).__init__()
         self.h_dim = h_dim
         self.x_dim = x_dim
         self.N = 10
