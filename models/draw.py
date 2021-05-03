@@ -33,7 +33,7 @@ def compute_filterbanks(A, B, log_var, gt_X, gt_Y, log_dt, N):
     g_Y = (B + 1) * (gt_Y + 1) / 2
 
     # calculate stride
-    d = torch.exp(log_dt) * (np.max([A, B]) - 1) / (N - 1)
+    d = (torch.exp(log_dt) * (np.max([A, B]) - 1) / (N - 1)).cpu()
     
     # compute filters
     F_X = torch.zeros((N, A))
