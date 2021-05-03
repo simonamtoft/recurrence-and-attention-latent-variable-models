@@ -25,7 +25,7 @@ def sigmoid(x):
 
 
 def fix_param(param):
-    return param.cpu().detach().numpy()
+    return np.asscalar(param.cpu().detach().numpy())
 
 
 def compute_filterbanks(A, B, log_var, gt_X, gt_Y, log_dt, N):
