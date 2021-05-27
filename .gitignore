@@ -7,3 +7,4 @@ notebooks/MNIST/MNIST/raw/t10k-labels-idx1-ubyte
 notebooks/MNIST/MNIST/raw/train-labels-idx1-ubyte
 notebooks/MNIST/MNIST/raw/train-images-idx3-ubyte
 *.pyc
+*.jpg

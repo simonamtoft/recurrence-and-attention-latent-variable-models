@@ -87,11 +87,11 @@ class BaseAttention(nn.Module):
 
 class FilterbankAttention(nn.Module):
     """ Attention module using Filterbank matrices """
-    def __init__(self, h_dim, x_dim, x_shape):
+    def __init__(self, h_dim, x_dim, x_shape, N):
         super(FilterbankAttention, self).__init__()
         self.h_dim = h_dim
         self.x_dim = x_dim
-        self.N = 16
+        self.N = N
         self.A = x_shape[0]
         self.B = x_shape[1]
         self.W_read = nn.Linear(h_dim, 5)
@@ -106,10 +106,13 @@ class FilterbankAttention(nn.Module):
         x = torch.reshape(x, (-1, self.A, self.B))
         x_hat = torch.reshape(x_hat, (-1, self.A, self.B))
 
-        # filter x and x_hat
+        # compute filterbank matrices
         F_X, F_Y = compute_filterbanks(
             self.A, self.B, params[2], fix_param(params[0]), 
-            fix_param(params[1]), params[3], self.N)
+            fix_param(params[1]), params[3], self.N
+        )
+
+        # filter x and x_hat
         x_filt = gamma * torch.matmul(torch.matmul(F_Y, x), F_X.T)
         x_hat_filt = gamma * torch.matmul(torch.matmul(F_Y, x_hat), F_X.T)
 
@@ -119,12 +122,14 @@ class FilterbankAttention(nn.Module):
         return torch.cat([x_filt, x_hat_filt], dim=1)
 
     def write(self, h_dec):
-        params = self.W_read(h_dec)
+        params = self.W_read(h_dec)[0]
         F_X, F_Y = compute_filterbanks(
             self.A, self.B, params[2], fix_param(params[0]), 
-            fix_param(params[1]), params[3], self.N)
-        w_t = self.W_write(h_dec)
-        return F_Y.T * w_t * F_X / torch.exp(params[4])
+            fix_param(params[1]), params[3], self.N
+        )
+        w_t = torch.reshape(self.W_write(h_dec), (-1, self.A, self.B))
+        c_new = F_Y.T * w_t * F_X / torch.exp(params[4])
+        return torch.reshape(c_new, (-1, self.A*self.B))
 
 
 class DRAW(nn.Module):
@@ -147,7 +152,7 @@ class DRAW(nn.Module):
         if x_shape == None:
             self.attention = BaseAttention(h_dim, x_dim)
         else:
-            self.attention = FilterbankAttention(h_dim, x_dim, x_shape)
+            self.attention = FilterbankAttention(h_dim, x_dim, x_shape, 28)
 
     def forward(self, x):
         batch_size = x.size(0)
@@ -175,8 +180,6 @@ class DRAW(nn.Module):
 
             # use attention to read image
             r_t = self.attention.read(x, x_hat, h_dec)
-            print(r_t.shape)
-            print(h_dec.shape)
 
             # pass throuygh encoder
             h_enc, c_enc = self.encoder(
