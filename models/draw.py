@@ -127,8 +127,8 @@ class FilterbankAttention(nn.Module):
             self.A, self.B, params[2], fix_param(params[0]), 
             fix_param(params[1]), params[3], self.N
         )
-        w_t = torch.reshape(self.W_write(h_dec), (-1, self.A, self.B))
-        c_new = F_Y.T * w_t * F_X / torch.exp(params[4])
+        w_t = torch.reshape(self.W_write(h_dec), (-1, self.N, self.N))
+        c_new = torch.matmul(torch.matmul(F_Y.T, w_t), F_X) / torch.exp(params[4])
         return torch.reshape(c_new, (-1, self.A*self.B))
 
 
@@ -139,20 +139,23 @@ class DRAW(nn.Module):
         self.x_dim = x_dim
         self.z_dim = z_dim
         self.T = T
+        self.N = 8
         
         # instantiate distribution layers
         self.variational = nn.Linear(h_dim, 2*z_dim)
         self.observation = nn.Linear(x_dim, x_dim)
 
-        # Recurrent encoder/decoder using LSTM
-        self.encoder = nn.LSTMCell(2*x_dim + h_dim, h_dim)
-        self.decoder = nn.LSTMCell(z_dim, h_dim)
-
         # define attention module
         if x_shape == None:
             self.attention = BaseAttention(h_dim, x_dim)
+            enc_dim = 2*x_dim + h_dim
         else:
-            self.attention = FilterbankAttention(h_dim, x_dim, x_shape, 28)
+            self.attention = FilterbankAttention(h_dim, x_dim, x_shape, self.N)
+            enc_dim = 2*self.N**2 + h_dim
+
+        # Recurrent encoder/decoder using LSTM
+        self.encoder = nn.LSTMCell(enc_dim, h_dim)
+        self.decoder = nn.LSTMCell(z_dim, h_dim)
 
     def forward(self, x):
         batch_size = x.size(0)
