@@ -133,14 +133,13 @@ class FilterbankAttention(nn.Module):
 
 
 class DRAW(nn.Module):
-    def __init__(self, x_dim, h_dim, z_dim, T=10, x_shape=None):
+    def __init__(self, x_dim, h_dim, z_dim, T=10, x_shape=None, N=12):
         super(DRAW, self).__init__()
         self.h_dim = h_dim
         self.x_dim = x_dim
         self.z_dim = z_dim
         self.T = T
-        self.N = 8
-        
+
         # instantiate distribution layers
         self.variational = nn.Linear(h_dim, 2*z_dim)
         self.observation = nn.Linear(x_dim, x_dim)
@@ -150,8 +149,8 @@ class DRAW(nn.Module):
             self.attention = BaseAttention(h_dim, x_dim)
             enc_dim = 2*x_dim + h_dim
         else:
-            self.attention = FilterbankAttention(h_dim, x_dim, x_shape, self.N)
-            enc_dim = 2*self.N**2 + h_dim
+            self.attention = FilterbankAttention(h_dim, x_dim, x_shape, N)
+            enc_dim = 2*N**2 + h_dim
 
         # Recurrent encoder/decoder using LSTM
         self.encoder = nn.LSTMCell(enc_dim, h_dim)
@@ -181,7 +180,7 @@ class DRAW(nn.Module):
             # calculate error
             x_hat = x - sigmoid(canvas)
 
-            # use attention to read image
+            # use attention to read image: N x N
             r_t = self.attention.read(x, x_hat, h_dec)
 
             # pass throuygh encoder
@@ -200,7 +199,7 @@ class DRAW(nn.Module):
             # pass through decoder
             h_dec, c_dec = self.decoder(z_t, [h_dec, c_dec])
 
-            # write on canvas
+            # write on canvas: A x B
             canvas += self.attention.write(h_dec)
 
             # add loss
