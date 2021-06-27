@@ -3,7 +3,7 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 
-from train_utils import lambda_lr, log_images
+from .train_utils import lambda_lr, log_images
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
