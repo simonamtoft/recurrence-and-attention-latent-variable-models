@@ -1,27 +1,18 @@
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import math
-from tqdm import tqdm
-
-import matplotlib.pyplot as plt
-
-from torch.utils.data import DataLoader
-from torchvision.datasets import MNIST
-from torchvision import transforms
-from torchvision.utils import save_image
-
 from torch.distributions import Normal
 from torch.distributions.kl import kl_divergence
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-def sigmoid(x):
-    return torch.where(
-        x >= 0, 
-        1 / (1 + torch.exp(-x)), 
-        torch.exp(x) / (1 + torch.exp(x))
-    )
+
+# def sigmoid(x):
+#     return torch.where(
+#         x >= 0, 
+#         1 / (1 + torch.exp(-x)), 
+#         torch.exp(x) / (1 + torch.exp(x))
+#     )
 
 
 def fix_param(param):
@@ -133,28 +124,31 @@ class FilterbankAttention(nn.Module):
 
 
 class DRAW(nn.Module):
-    def __init__(self, x_dim, h_dim, z_dim, T=10, x_shape=None, N=12):
+    def __init__(self, config, x_shape):
         super(DRAW, self).__init__()
-        self.h_dim = h_dim
-        self.x_dim = x_dim
-        self.z_dim = z_dim
-        self.T = T
+        self.h_dim = config['h_dim']
+        self.x_dim = x_shape[0] * x_shape[1]
+        self.z_dim = config['z_dim']
+        self.T = config['T']
+        self.N = config['N']
 
         # instantiate distribution layers
-        self.variational = nn.Linear(h_dim, 2*z_dim)
-        self.observation = nn.Linear(x_dim, x_dim)
+        self.variational = nn.Linear(self.h_dim, 2*self.z_dim)
+        self.observation = nn.Linear(self.x_dim, self.x_dim)
 
         # define attention module
-        if x_shape == None:
-            self.attention = BaseAttention(h_dim, x_dim)
-            enc_dim = 2*x_dim + h_dim
+        if config['attention'] == 'base':
+            self.attention = BaseAttention(self.h_dim, self.x_dim)
+            enc_dim = 2*self.x_dim + self.h_dim
+        elif config['attention'] == 'filterbank':
+            self.attention = FilterbankAttention(self.h_dim, self.x_dim, x_shape, self.N)
+            enc_dim = 2*self.N**2 + self.h_dim
         else:
-            self.attention = FilterbankAttention(h_dim, x_dim, x_shape, N)
-            enc_dim = 2*N**2 + h_dim
+            raise Exception(f"Error: Attention module '{config['attention']}' not implemented.")
 
         # Recurrent encoder/decoder using LSTM
-        self.encoder = nn.LSTMCell(enc_dim, h_dim)
-        self.decoder = nn.LSTMCell(z_dim, h_dim)
+        self.encoder = nn.LSTMCell(enc_dim, self.h_dim)
+        self.decoder = nn.LSTMCell(self.z_dim, self.h_dim)
 
     def forward(self, x):
         batch_size = x.size(0)
@@ -178,7 +172,7 @@ class DRAW(nn.Module):
 
         for _ in range(self.T):
             # calculate error
-            x_hat = x - sigmoid(canvas)
+            x_hat = x - torch.sigmoid(canvas)
 
             # use attention to read image: N x N
             r_t = self.attention.read(x, x_hat, h_dec)
@@ -226,10 +220,3 @@ class DRAW(nn.Module):
         
         x_mu = self.observation(canvas)
         return x_mu
-
-
-
-
-
-
-
