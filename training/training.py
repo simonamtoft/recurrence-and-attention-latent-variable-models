@@ -26,8 +26,8 @@ def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
         scheduler = torch.optim.lr_scheduler.LambdaLR(
             optimizer, lr_lambda=lambda_lr(**config["lr_decay"])
         )
-
-    # display.clear_output(wait=True)
+    
+    alpha = config['kl_weight'][0]
     for epoch in range(config['epochs']):
         prog_str = f"{epoch+1}/{config['epochs']}"
         print(f"Epoch {prog_str}")
@@ -50,7 +50,7 @@ def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
             # compute losses
             reconstruction = torch.mean(loss(x_hat, x).sum(1))
             kl = torch.mean(kld.sum(1))
-            elbo = reconstruction + kl #* alpha
+            elbo = reconstruction + kl * alpha
 
             # Update gradients
             elbo.backward()
@@ -92,7 +92,7 @@ def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
                 # Compute losses
                 reconstruction = torch.mean(loss(x_hat, x).sum(1))
                 kl = torch.mean(kld.sum(1))
-                elbo = reconstruction + kl
+                elbo = reconstruction + kl * alpha
 
                 # save losses
                 loss_recon[i] = reconstruction.item()
@@ -111,6 +111,9 @@ def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
 
             # Log images to wandb
             log_images(x_hat, x_sample)
+        
+        # Update weight
+        alpha *= config['kl_weight'][1]
     
     # Finalize training
     wandb.finish()
