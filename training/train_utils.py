@@ -30,17 +30,8 @@ def plt_img_save(img, name='log_image.png'):
 
 
 def log_images(x_recon, x_sample):
-    # Save the images
-    save_image(x_recon, "recon.jpg")
-    save_image(x_sample, "sample.jpg")
-
-    # Load images
-    img_recon = image.imread('recon.jpg')[:, :, 0]
-    img_sample = image.imread('sample.jpg')[:, :, 0]
-
-    # Save images as proper plots
-    plt_img_save(img_recon, name="recon.png")
-    plt_img_save(img_sample, name="sample.png")
+    convert_img(x_recon, "recon")
+    convert_img(x_sample, "sample")
 
     # Log the images to wandb
     wandb.log({
@@ -48,8 +39,23 @@ def log_images(x_recon, x_sample):
         "Sample": wandb.Image("sample.png")
     }, commit=True)
 
-    # Delete the images
-    os.remove("recon.jpg")
-    os.remove("sample.jpg")
+    # Delete the logged images
     os.remove("recon.png")
     os.remove("sample.png")
+
+
+def convert_img(img, img_name):
+    name_jpg = img_name + '.jpg'
+    name_png = img_name + '.png'
+
+    # Save batch as single image
+    save_image(img, name_jpg)
+
+    # Load image
+    imag = image.imread(name_jpg)[:, :, 0]
+
+    # Delete image
+    os.remove(name_jpg)
+
+    # Save image as proper plots
+    plt_img_save(imag, name=name_png)
