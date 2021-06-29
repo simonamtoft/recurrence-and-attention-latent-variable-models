@@ -11,18 +11,18 @@ def compute_filterbanks(A, B, params, N):
     # Unpack params
     gt_X = params[0]
     gt_Y = params[1]
-    log_var = params[2]
-    log_dt = params[3]
+    var = torch.exp(params[2] + 1e-8)
+    dt = torch.exp(params[3])
 
     # retrieve non-log versions
-    var = torch.exp(log_var + 1e-8)
+    # var = torch.exp(log_var + 1e-8)
 
     # calculate grid center
     g_X = ((A + 1) * (gt_X + 1) / 2).item()
     g_Y = ((B + 1) * (gt_Y + 1) / 2).item()
 
     # calculate stride
-    d = (torch.exp(log_dt) * (torch.max(torch.tensor([A, B])) - 1) / (N - 1)).item()
+    d = (dt * (torch.max(torch.tensor([A, B])) - 1) / (N - 1)).item()
     
     # compute filters
     F_X = torch.zeros((N, A)).to(device)
