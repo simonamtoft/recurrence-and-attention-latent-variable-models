@@ -1,4 +1,5 @@
 import wandb
+import json
 from tqdm import tqdm
 import torch
 import torch.nn as nn
@@ -9,6 +10,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
+    print(f"\nTraining will run on device: {device}")
+    print(f"\nStarting training with config:")
+    print(json.dumps(config, sort_keys=False, indent=4))
+
     # Initialize a new wandb run
     wandb.init(project=project_name, config=config)
     wandb.watch(model)

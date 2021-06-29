@@ -7,7 +7,6 @@ from models import DRAW
 from training import train_draw
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print(f'Using device {device}')
 
 
 # Download binarized MNIST data
@@ -63,7 +62,6 @@ val_loader = DataLoader(
 data_iter = iter(train_loader)
 images, labels = data_iter.next()
 x_shape = images.shape[2:4]
-x_dim = x_shape[0] * x_shape[1]
 
 # Instantiate model
 model = DRAW(config, x_shape).to(device)
