@@ -7,36 +7,35 @@ from torch.distributions.kl import kl_divergence
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def compute_filterbanks(A, B, params, N):
+def compute_filterbanks(A, B, params, N, max_dim):
     # Unpack params
     gt_X = params[0]
     gt_Y = params[1]
     var = torch.exp(params[2] + 1e-8)
     dt = torch.exp(params[3])
 
-    # retrieve non-log versions
-    # var = torch.exp(log_var + 1e-8)
-
     # calculate grid center
     g_X = ((A + 1) * (gt_X + 1) / 2).item()
     g_Y = ((B + 1) * (gt_Y + 1) / 2).item()
 
     # calculate stride
-    d = (dt * (torch.max(torch.tensor([A, B])) - 1) / (N - 1)).item()
+    d = (dt * (max_dim - 1) / (N - 1)).item()
     
     # compute filters
     F_X = torch.zeros((N, A)).to(device)
     F_Y = torch.zeros((N, B)).to(device)
 
     # construct mean vectors
+    sub_val = (- N*0.5 - 0.5) * d
+    add_val = (N-1 - N*0.5 - 0.5) * d
     mu_X = torch.linspace(
-        g_X + (- N/2 - 0.5) * d, 
-        g_X + (N-1 - N/2 - 0.5) * d,
+        g_X + sub_val, 
+        g_X + add_val,
         N
     ).to(device)
     mu_Y = torch.linspace(
-        g_Y + (- N/2 - 0.5) * d, 
-        g_Y + (N-1 - N/2 - 0.5) * d,
+        g_Y + sub_val, 
+        g_Y + add_val,
         N
     ).to(device)
 
@@ -77,6 +76,7 @@ class FilterbankAttention(nn.Module):
         self.N = N
         self.A = x_shape[0]
         self.B = x_shape[1]
+        self.max_dim = torch.max(torch.tensor(x_shape))
         self.W_read = nn.Linear(h_dim, 5)
         self.W_write = nn.Linear(h_dim, self.N**2)
 
@@ -91,7 +91,7 @@ class FilterbankAttention(nn.Module):
 
         # compute filterbank matrices
         F_X, F_Y = compute_filterbanks(
-            self.A, self.B, params, self.N
+            self.A, self.B, params, self.N, self.max_dim
         )
 
         # filter x and x_hat
@@ -106,7 +106,7 @@ class FilterbankAttention(nn.Module):
     def write(self, h_dec):
         params = self.W_read(h_dec)[0]
         F_X, F_Y = compute_filterbanks(
-            self.A, self.B, params, self.N
+            self.A, self.B, params, self.N, self.max_dim
         )
         w_t = torch.reshape(self.W_write(h_dec), (-1, self.N, self.N))
         c_new = torch.matmul(torch.matmul(F_Y.T, w_t), F_X) / torch.exp(params[4])
