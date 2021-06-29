@@ -7,7 +7,13 @@ from torch.distributions.kl import kl_divergence
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def compute_filterbanks(A, B, log_var, gt_X, gt_Y, log_dt, N):
+def compute_filterbanks(A, B, params, N):
+    # Unpack params
+    gt_X = params[0]
+    gt_Y = params[1]
+    log_var = params[2]
+    log_dt = params[3]
+
     # retrieve non-log versions
     var = torch.exp(log_var + 1e-8)
 
@@ -85,8 +91,7 @@ class FilterbankAttention(nn.Module):
 
         # compute filterbank matrices
         F_X, F_Y = compute_filterbanks(
-            self.A, self.B, params[2], params[0], 
-            params[1], params[3], self.N
+            self.A, self.B, params, self.N
         )
 
         # filter x and x_hat
@@ -101,8 +106,7 @@ class FilterbankAttention(nn.Module):
     def write(self, h_dec):
         params = self.W_read(h_dec)[0]
         F_X, F_Y = compute_filterbanks(
-            self.A, self.B, params[2], params[0], 
-            params[1], params[3], self.N
+            self.A, self.B, params, self.N
         )
         w_t = torch.reshape(self.W_write(h_dec), (-1, self.N, self.N))
         c_new = torch.matmul(torch.matmul(F_Y.T, w_t), F_X) / torch.exp(params[4])
