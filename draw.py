@@ -28,12 +28,12 @@ config = {
     'batch_size': 64,
     'epochs': 250,
     'lr': 1e-3,
-    'lr_decay': {
-        'n_epochs': 500,
-        'offset': 0,
-        'delay': 25,
-    },
-    'kl_weight': [0.1, 1.5],
+    # 'lr_decay': {
+    #     'n_epochs': 500,
+    #     'offset': 0,
+    #     'delay': 25,
+    # },
+    'kl_weight': [1, 1], #0.1, 1.5
     'h_dim': 256,
     'z_dim': 32, 
     'T': 10,
@@ -45,7 +45,7 @@ config = {
 train_set, val_set = torch.utils.data.random_split(mnist_data, [50000, 10000])
 
 # Setup data loader
-kwargs = {'num_workers': 1, 'pin_memory': True} if torch.cuda.is_available() else {}
+kwargs = {'num_workers': 4, 'pin_memory': True} if torch.cuda.is_available() else {}
 train_loader = DataLoader(
     train_set,
     batch_size=config['batch_size'],

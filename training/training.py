@@ -33,9 +33,9 @@ def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
         print(f"Epoch {prog_str}")
 
         # Prepare epoch
-        loss_recon = torch.zeros(len(train_loader))
-        loss_kl = torch.zeros(len(train_loader))
-        loss_elbo = torch.zeros(len(train_loader))
+        loss_recon = []
+        loss_kl = []
+        loss_elbo = []
 
         # Go through all training batches
         model.train()
@@ -58,15 +58,15 @@ def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
             optimizer.zero_grad()
 
             # save losses
-            loss_recon[i] = reconstruction.item()
-            loss_kl[i] = kl.item()
-            loss_elbo[i] = elbo.item()
+            loss_recon.append(reconstruction.item())
+            loss_kl.append(kl.item())
+            loss_elbo.append(elbo.item())
         
         # Log train stuff
         wandb.log({
-            'recon_train': loss_recon.mean(),
-            'kl_train': loss_kl.mean(),
-            'elbo_train': loss_elbo.mean()
+            'recon_train': torch.tensor(loss_recon).mean(),
+            'kl_train': torch.tensor(loss_kl).mean(),
+            'elbo_train': torch.tensor(loss_elbo).mean()
         }, commit=False)
         
         # Update scheduler
@@ -77,9 +77,9 @@ def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
         model.eval()
         with torch.no_grad():
 
-            loss_recon = torch.zeros(len(val_loader))
-            loss_kl = torch.zeros(len(val_loader))
-            loss_elbo = torch.zeros(len(val_loader))
+            loss_recon = []
+            loss_kl = []
+            loss_elbo = []
 
             for x, i in tqdm(val_loader, disable=True, desc=f"val ({prog_str})"):
                 batch_size = x.size(0)
@@ -95,15 +95,15 @@ def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
                 elbo = reconstruction + kl * alpha
 
                 # save losses
-                loss_recon[i] = reconstruction.item()
-                loss_kl[i] = kl.item()
-                loss_elbo[i] = elbo.item()
+                loss_recon.append(reconstruction.item())
+                loss_kl.append(kl.item())
+                loss_elbo.append(elbo.item())
             
             # Log validation stuff
             wandb.log({
-                'recon_val': loss_recon.mean(),
-                'kl_val': loss_kl.mean(),
-                'elbo_val': loss_elbo.mean()
+                'recon_val': torch.tensor(loss_recon).mean(),
+                'kl_val': torch.tensor(loss_kl).mean(),
+                'elbo_val': torch.tensor(loss_elbo).mean()
             }, commit=False)
 
             # Sample from model

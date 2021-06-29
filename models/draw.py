@@ -7,16 +7,9 @@ from torch.distributions.kl import kl_divergence
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-# def sigmoid(x):
-#     return torch.where(
-#         x >= 0, 
-#         1 / (1 + torch.exp(-x)), 
-#         torch.exp(x) / (1 + torch.exp(x))
-#     )
-
-
 def fix_param(param):
-    return np.asscalar(param.cpu().detach().numpy())
+    return param
+    # return np.asscalar(param.cpu().detach().numpy())
 
 
 def compute_filterbanks(A, B, log_var, gt_X, gt_Y, log_dt, N):
@@ -24,29 +17,30 @@ def compute_filterbanks(A, B, log_var, gt_X, gt_Y, log_dt, N):
     var = torch.exp(log_var + 1e-8)
 
     # calculate grid center
-    g_X = (A + 1) * (gt_X + 1) / 2
-    g_Y = (B + 1) * (gt_Y + 1) / 2
+    g_X = ((A + 1) * (gt_X + 1) / 2).item()
+    g_Y = ((B + 1) * (gt_Y + 1) / 2).item()
 
     # calculate stride
-    d = fix_param(
-        torch.exp(log_dt) * (np.max([A, B]) - 1) / (N - 1)
-    )
+    # d = fix_param(
+    #     torch.exp(log_dt) * (np.max([A, B]) - 1) / (N - 1)
+    # )
+    d = (torch.exp(log_dt) * (torch.max(torch.tensor([A, B])) - 1) / (N - 1)).item()
     
     # compute filters
-    F_X = torch.zeros((N, A)).to('cuda:0')
-    F_Y = torch.zeros((N, B)).to('cuda:0')
+    F_X = torch.zeros((N, A)).to(device)
+    F_Y = torch.zeros((N, B)).to(device)
 
     # construct mean vectors
     mu_X = torch.linspace(
         g_X + (- N/2 - 0.5) * d, 
         g_X + (N-1 - N/2 - 0.5) * d,
         N
-    ).to('cuda:0')
+    ).to(device)
     mu_Y = torch.linspace(
         g_Y + (- N/2 - 0.5) * d, 
         g_Y + (N-1 - N/2 - 0.5) * d,
         N
-    ).to('cuda:0')
+    ).to(device)
 
     # Compute filter matrices
     for a in range(A):
