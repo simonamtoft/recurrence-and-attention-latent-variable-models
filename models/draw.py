@@ -7,51 +7,6 @@ from torch.distributions.kl import kl_divergence
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def compute_filterbanks(A, B, params, N, max_dim):
-    # Unpack params
-    gt_X = params[0]
-    gt_Y = params[1]
-    var = torch.exp(params[2] + 1e-8)
-    dt = torch.exp(params[3])
-
-    # calculate grid center
-    g_X = ((A + 1) * (gt_X + 1) / 2).item()
-    g_Y = ((B + 1) * (gt_Y + 1) / 2).item()
-
-    # calculate stride
-    d = (dt * (max_dim - 1) / (N - 1)).item()
-    
-    # compute filters
-    F_X = torch.zeros((N, A)).to(device)
-    F_Y = torch.zeros((N, B)).to(device)
-
-    # construct mean vectors
-    sub_val = (- N*0.5 - 0.5) * d
-    add_val = (N-1 - N*0.5 - 0.5) * d
-    mu_X = torch.linspace(
-        g_X + sub_val, 
-        g_X + add_val,
-        N
-    ).to(device)
-    mu_Y = torch.linspace(
-        g_Y + sub_val, 
-        g_Y + add_val,
-        N
-    ).to(device)
-
-    # Compute filter matrices
-    for a in range(A):
-        F_X[:, a] = torch.exp( -(a - mu_X)**2 / (2 * var))
-
-    for b in range(B):
-        F_Y[:, b] = torch.exp( -(b - mu_Y)**2 / (2 * var))
-
-    # normalize filters (should each sum to 1)
-    F_X = F_X / torch.sum(F_X)
-    F_Y = F_Y / torch.sum(F_Y)
-    return F_X, F_Y
-
-
 class BaseAttention(nn.Module):
     """ No attention module """
     def __init__(self, h_dim, x_dim):
@@ -79,6 +34,50 @@ class FilterbankAttention(nn.Module):
         self.max_dim = torch.max(torch.tensor(x_shape))
         self.W_read = nn.Linear(h_dim, 5)
         self.W_write = nn.Linear(h_dim, self.N**2)
+    
+    def compute_F(self, params):
+        # Unpack params
+        gt_X = params[0]
+        gt_Y = params[1]
+        var = torch.exp(params[2] + 1e-8)
+        dt = torch.exp(params[3])
+
+        # calculate grid center
+        g_X = ((self.A + 1) * (gt_X + 1) / 2).item()
+        g_Y = ((self.B + 1) * (gt_Y + 1) / 2).item()
+
+        # calculate stride
+        d = (dt * (self.max_dim - 1) / (self.N - 1)).item()
+        
+        # compute filters
+        F_X = torch.zeros((self.N, self.A)).to(device)
+        F_Y = torch.zeros((self.N, self.B)).to(device)
+
+        # construct mean vectors
+        sub_val = (- self.N*0.5 - 0.5) * d
+        add_val = (self.N-1 - self.N*0.5 - 0.5) * d
+        mu_X = torch.linspace(
+            g_X + sub_val, 
+            g_X + add_val,
+            self.N
+        ).to(device)
+        mu_Y = torch.linspace(
+            g_Y + sub_val, 
+            g_Y + add_val,
+            self.N
+        ).to(device)
+
+        # Compute filter matrices
+        for a in range(self.A):
+            F_X[:, a] = torch.exp( -(a - mu_X)**2 / (2 * var))
+
+        for b in range(self.B):
+            F_Y[:, b] = torch.exp( -(b - mu_Y)**2 / (2 * var))
+
+        # normalize filters (should each sum to 1)
+        F_X = F_X / torch.sum(F_X)
+        F_Y = F_Y / torch.sum(F_Y)
+        return F_X, F_Y
 
     def read(self, x, x_hat, h):
         """ Performs the read operation with attention """
@@ -90,9 +89,7 @@ class FilterbankAttention(nn.Module):
         x_hat = torch.reshape(x_hat, (-1, self.A, self.B))
 
         # compute filterbank matrices
-        F_X, F_Y = compute_filterbanks(
-            self.A, self.B, params, self.N, self.max_dim
-        )
+        F_X, F_Y = self.compute_F(params)
 
         # filter x and x_hat
         x_filt = gamma * torch.matmul(torch.matmul(F_Y, x), F_X.T)
@@ -105,9 +102,7 @@ class FilterbankAttention(nn.Module):
 
     def write(self, h_dec):
         params = self.W_read(h_dec)[0]
-        F_X, F_Y = compute_filterbanks(
-            self.A, self.B, params, self.N, self.max_dim
-        )
+        F_X, F_Y = self.compute_F(params)
         w_t = torch.reshape(self.W_write(h_dec), (-1, self.N, self.N))
         c_new = torch.matmul(torch.matmul(F_Y.T, w_t), F_X) / torch.exp(params[4])
         return torch.reshape(c_new, (-1, self.A*self.B))
