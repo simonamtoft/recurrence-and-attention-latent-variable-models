@@ -119,25 +119,22 @@ class VariationalAutoencoder(nn.Module):
                         [input_dim, [hidden_dims], latent_dim]
          
     """
-
-    def __init__(self, dims, as_beta=False):
+    def __init__(self, config, x_dim):
         super(VariationalAutoencoder, self).__init__()
         # setup network dimensions
-        [x_dim, h_dim, z_dim] = dims
+        h_dim = config['h_dim']
+        z_dim = config['z_dim']
+        dims = [x_dim, h_dim, z_dim]
 
         # Define encoder 
         self.encoder = Encoder(dims)
         
         # Define decoder
         dec_dim = [z_dim, list(reversed(h_dim)), x_dim]
-        if as_beta:
+        if config['as_beta']:
             self.decoder = BetaDecoder(dec_dim)
         else: 
             self.decoder = Decoder(dec_dim)
-
-
-        # The KL-Divergence
-        self.kld = 0
 
         # zero out the biases
         for m in self.modules():
@@ -188,11 +185,11 @@ class VariationalAutoencoder(nn.Module):
         z, z_mu, z_log_var = self.encoder(x)
 
         # compute KL-divergence
-        self.kld = self._kld(z, (z_mu, z_log_var))
+        kld = self._kld(z, (z_mu, z_log_var))
 
         # reconstruct input via. decoder
         x_mu = self.decoder(z)
-        return x_mu
+        return x_mu, kld
 
     def sample(self, z):
         """ Sampling from model

@@ -50,7 +50,10 @@ val_loader = DataLoader(
 )
 
 # Instantiate model
-model = VariationalAutoencoder(config, x_dim=784).to(device)
+h_dims = config['h_dim']
+z_dim = config['z_dim']
+x_dim = 784
+model = VariationalAutoencoder(config, x_dim).to(device)
 
 # Train model
 train_vae(model, config, train_loader, val_loader, 'vae')

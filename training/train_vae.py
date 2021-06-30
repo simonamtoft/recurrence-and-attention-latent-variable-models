@@ -38,8 +38,7 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
             # Pass batch through model
             x = x.view(batch_size, -1)
             x = Variable(x).to(device)
-            x_hat = model(x)
-            kld = model.kld
+            x_hat, kld = model(x)
 
             # Compute losses
             recon = -bce_loss(x_hat, x)
@@ -75,8 +74,7 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
                  # Pass batch through model
                 x = x.view(batch_size, -1)
                 x = Variable(x).to(device)
-                x_hat = model(x)
-                kld = model.kld
+                x_hat, kld = model(x)
 
                 # Compute losses
                 recon = -bce_loss(x_hat, x)
