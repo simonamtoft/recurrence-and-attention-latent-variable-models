@@ -24,7 +24,7 @@ mnist_data = MNIST(
 
 # Define config
 config = {
-    'batch_size': 64,
+    'batch_size': 1,
     'epochs': 250,
     'lr': 1e-3,
     # 'lr_decay': {
