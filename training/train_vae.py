@@ -16,125 +16,84 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
     print(f"\nStarting training with config:")
     print(json.dumps(config, sort_keys=False, indent=4))
 
+    # Initialize a new wandb run
+    wandb.init(project=project_name, config=config)
+    wandb.watch(model)
+
     # define optimizer
-    optimizer = torch.optim.Adam(model.parameters(), lr=3e-4, betas=(0.9, 0.999))
+    optimizer = torch.optim.Adam(model.parameters(), lr=config['lr'], betas=(0.9, 0.999))
 
     for epoch in range(config['epochs']):
         prog_str = f"{epoch+1}/{config['epochs']}"
         print(f'Epoch {prog_str}')
-
+        
+        # Train Epoch
         model.train()
+        elbo_train = []
+        kld_train = []
+        recon_train = []
         for x, _ in iter(train_loader):
+            batch_size = x.size(0)
 
             # Pass batch through model
+            x = x.view(batch_size, -1)
             x = Variable(x).to(device)
             x_hat = model(x)
+            kld = model.kld
 
             # Compute losses
             recon = -bce_loss(x_hat, x)
-            elbo = recon - model.kld
+            elbo = recon - kld
             L = -torch.mean(elbo)
 
+            # Update gradients
             L.backward()
             optimizer.step()
             optimizer.zero_grad()
 
-# def train_vae(model, config, train_loader, val_loader, project_name='vae'):
-#     print(f"\nTraining will run on device: {device}")
-#     print(f"\nStarting training with config:")
-#     print(json.dumps(config, sort_keys=False, indent=4))
+            # save losses
+            elbo_train.append(torch.mean(elbo).item())
+            kld_train.append(torch.mean(kld).item())
+            recon_train.append(torch.mean(recon).item())
+        
+        # Log train stuff
+        wandb.log({
+            'recon_train': torch.tensor(recon_train).mean(),
+            'kl_train': torch.tensor(kld_train).mean(),
+            'elbo_train': torch.tensor(elbo_train).mean()
+        }, commit=False)
 
-#     # Initialize a new wandb run
-#     wandb.init(project=project_name, config=config)
-#     wandb.watch(model)
+        # Validation epoch
+        model.eval()
+        elbo_val = []
+        kld_val = []
+        recon_val = []
+        with torch.no_grad():
+            for x, _ in iter(val_loader):
+                batch_size = x.size(0)
 
-#     # define optimizer
-#     optimizer = torch.optim.Adam(model.parameters(), lr=config['lr'], betas=(0.9, 0.999))
+                 # Pass batch through model
+                x = x.view(batch_size, -1)
+                x = Variable(x).to(device)
+                x_hat = model(x)
+                kld = model.kld
 
-#     # Training Loop
-#     for epoch in range(config['epochs']):
+                # Compute losses
+                recon = -bce_loss(x_hat, x)
+                elbo = recon - kld
+                L = -torch.mean(elbo)
 
-#         # Train part
-#         model.train()
-#         elbo_train = []
-#         kld_train = []
-#         recon_train = []
-#         for x, i in tqdm(train_loader, disable=True, desc=f"train ({prog_str})"):
-#             batch_size = x.size(0)
-
-#             # Pass through model
-#             x = Variable(x).to(device)
-#             x_hat, kld = model(x)
-
-#             # Compute loss
-#             recon = -bce_loss(x_hat, x)
-#             elbo = recon - kld
-#             L = -torch.mean(elbo)
-#             # recon = -bce_loss(x_hat, u)
-#             # elbo = likelihood - kld
-#             # L = -torch.mean(elbo)
-#             # recon = torch.mean(bce_loss(x_hat, x).sum(1))
-#             # kld = torch.mean(kld.sum(1))
-#             # elbo = recon + kld
-
-#             # Update gradients
-#             L.backward()
-#             optimizer.step()
-#             optimizer.zero_grad()
-            
-#             # save losses
-#             elbo_train.append(torch.mean(elbo).item())
-#             kld_train.append(torch.mean(kld).item())
-#             recon_train.append(torch.mean(recon).item())
-
-#         # Log train stuff
-#         wandb.log({
-#             'recon_train': torch.tensor(recon_train).mean(),
-#             'kl_train': torch.tensor(kld_train).mean(),
-#             'elbo_train': torch.tensor(elbo_train).mean()
-#         }, commit=False)
-
-#         # Evaluate on validation set
-#         model.eval()
-#         with torch.no_grad():
-#             loss_recon = []
-#             loss_kl = []
-#             loss_elbo = []
-
-#             for x, i in tqdm(val_loader, disable=True, desc=f"val ({prog_str})"):
-#                 batch_size = x.size(0)
-
-#                # Pass through model
-#                 x = Variable(x).to(device)
-#                 x_hat, kld = model(x)
-
-#                 # Compute loss
-#                 recon = -bce_loss(x_hat, u)
-#                 elbo = likelihood - kld
-#                 L = -torch.mean(elbo)
-
-#                 # Update gradients
-#                 L.backward()
-#                 optimizer.step()
-#                 optimizer.zero_grad()
-                
-#                 # save losses
-#                 elbo_train.append(torch.mean(elbo).item())
-#                 kld_train.append(torch.mean(kld).item())
-#                 recon_train.append(torch.mean(recon).item())
-            
-#             # Log validation stuff
-#             wandb.log({
-#                 'recon_val': torch.tensor(loss_recon).mean(),
-#                 'kl_val': torch.tensor(loss_kl).mean(),
-#                 'elbo_val': torch.tensor(loss_elbo).mean()
-#             }, commit=False)
-
-#             # Sample from model
-#             x_sample = model.sample()
-
-#             # Log images to wandb
-#             log_images(x_hat, x_sample)
+                # save losses
+                elbo_val.append(torch.mean(elbo).item())
+                kld_val.append(torch.mean(kld).item())
+                recon_val.append(torch.mean(recon).item())
+        
+        # Log validation stuff
+        wandb.log({
+            'recon_val': torch.tensor(recon_val).mean(),
+            'kl_val': torch.tensor(kld_val).mean(),
+            'elbo_val': torch.tensor(elbo_val).mean()
+        }, commit=True)
     
-#     # Finalize training
-#     wandb.finish()
+    # Finalize training
+    wandb.finish()
