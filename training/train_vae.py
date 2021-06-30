@@ -93,7 +93,7 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
             'recon_val': torch.tensor(recon_val).mean(),
             'kl_val': torch.tensor(kld_val).mean(),
             'elbo_val': torch.tensor(elbo_val).mean()
-        }, commit=True)
+        }, commit=False)
 
         # Sample from model
         x_mu = Variable(torch.randn(16, config['z_dim'])).to(device)
