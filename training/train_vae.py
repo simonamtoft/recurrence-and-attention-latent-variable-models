@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from .train_utils import log_images #lambda_lr, 
+from .train_utils import log_images
 from .losses import bce_loss
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -94,6 +94,12 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
             'kl_val': torch.tensor(kld_val).mean(),
             'elbo_val': torch.tensor(elbo_val).mean()
         }, commit=True)
+
+        # Sample from model
+        x_sample = model.sample()
+
+        # Log images to wandb
+        log_images(x_hat, x_sample)
     
     # Finalize training
     wandb.finish()
