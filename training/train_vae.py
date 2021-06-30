@@ -96,7 +96,8 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
         }, commit=True)
 
         # Sample from model
-        x_sample = model.sample()
+        x_mu = Variable(torch.randn(16, z_dim)).to(device)
+        x_sample = model.sample(x_mu)
 
         # Log images to wandb
         log_images(x_hat, x_sample)
