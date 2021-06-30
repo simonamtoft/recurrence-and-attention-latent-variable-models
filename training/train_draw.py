@@ -19,7 +19,7 @@ def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
     wandb.watch(model)
 
     # Define loss function
-    loss = nn.BCELoss(reduction='none').to(device)
+    bce_loss = nn.BCELoss(reduction='none').to(device)
 
     # Set optimizer
     optimizer = torch.optim.Adam(
@@ -53,7 +53,7 @@ def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
             x_hat = torch.sigmoid(x_hat)
 
             # compute losses
-            reconstruction = torch.mean(loss(x_hat, x).sum(1))
+            reconstruction = torch.mean(bce_loss(x_hat, x).sum(1))
             kl = torch.mean(kld.sum(1))
             elbo = reconstruction + kl * alpha
 
@@ -95,7 +95,7 @@ def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
                 x_hat = torch.sigmoid(x_hat)
                 
                 # Compute losses
-                reconstruction = torch.mean(loss(x_hat, x).sum(1))
+                reconstruction = torch.mean(bce_loss(x_hat, x).sum(1))
                 kl = torch.mean(kld.sum(1))
                 elbo = reconstruction + kl * alpha
 
