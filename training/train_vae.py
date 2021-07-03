@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 
-from .train_utils import log_images
+from .train_utils import log_images, lambda_lr, DeterministicWarmup
 from .losses import bce_loss
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -23,6 +23,19 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
     # define optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=config['lr'], betas=(0.9, 0.999))
 
+    # Set learning rate scheduler
+    if "lr_decay" in config:
+        scheduler = torch.optim.lr_scheduler.LambdaLR(
+            optimizer, lr_lambda=lambda_lr(**config["lr_decay"])
+        )
+    
+    # linear deterministic warmup
+    if config["lr_warmup"]:
+        gamma = DeterministicWarmup(n=50, t_max=1)
+    else:
+        gamma = DeterministicWarmup(n=1, t_max=1)
+
+    # Run training
     for epoch in range(config['epochs']):
         prog_str = f"{epoch+1}/{config['epochs']}"
         print(f'Epoch {prog_str}')
@@ -62,6 +75,10 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
             'elbo_train': torch.tensor(elbo_train).mean()
         }, commit=False)
 
+        # Update scheduler
+        if "lr_decay" in config:
+            scheduler.step()
+
         # Validation epoch
         model.eval()
         elbo_val = []
@@ -78,7 +95,7 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
 
                 # Compute losses
                 recon = -bce_loss(x_hat, x)
-                elbo = recon - kld
+                elbo = recon - next(gamma) * kld
                 L = -torch.mean(elbo)
 
                 # save losses
