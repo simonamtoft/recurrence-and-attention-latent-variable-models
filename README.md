@@ -8,9 +8,17 @@ In this project, we study recurrent latent variable models for image generation.
 The project is carried out by [Simon Amtoft Pedersen](https://github.com/simonamtoft), and supervised by Giorgio Giannone.
 
 ## Variational Autoencoder
-Variational Autoencoders (VAEs) are a type of latent variable model that can be used for generative modelling. The VAEs consists of a decoder part and an encoder part, by optimizing the Evidence Lower Bound (ELBO). 
+Variational Autoencoders (VAEs) are a type of latent variable model that can be used for generative modelling. The VAEs consists of a decoder part and an encoder part, that is trained by optimizing the Evidence Lower Bound (ELBO). The generative model is given by <img src="https://latex.codecogs.com/svg.image?\inline&space;p_\theta(z)&space;=&space;p_\theta(x|z)&space;p_\theta(z)" title="\inline p_\theta(z) = p_\theta(x|z) p_\theta(z)" /> and the samples are then drawn from the distribution by <img src="https://latex.codecogs.com/svg.image?\inline&space;z&space;\sim&space;p_\theta(z|x)&space;=&space;\frac{p_\theta(x|z)&space;p_\theta(z)}{p_\theta(x)}&space;" title="\inline z \sim p_\theta(z|x) = \frac{p_\theta(x|z) p_\theta(z)}{p_\theta(x)} " />. 
 
 Once the model is trained, it can generate new examples by sampling <img src="https://latex.codecogs.com/svg.image?\inline&space;z&space;\sim&space;N(z|0,1)" title="\inline z \sim N(z|0,1)" /> and then passing this sample through the decoder to generate a new example <img src="https://latex.codecogs.com/svg.image?\inline&space;x&space;\sim&space;N(x|\mu(z),&space;diag(\sigma^2(z)))" title="\inline x \sim N(x|\mu(z), diag(\sigma^2(z)))" />.
+
+
+# Ladder VAE
+An extension of the standard VAE is the [Ladder VAE](https://arxiv.org/pdf/1602.02282.pdf), which adds sharing of information and parameters between the encoder and decoder. 
+
+## Deep Recurrent Attentive Writer
+
+
 
 ## Structure
 In this repo you will find the three different model classes in the models directory, and the necessary training loops for each model is found in the training directory.
