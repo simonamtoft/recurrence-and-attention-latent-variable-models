@@ -7,6 +7,12 @@ In this project, we study recurrent latent variable models for image generation.
 
 The project is carried out by [Simon Amtoft Pedersen](https://github.com/simonamtoft), and supervised by Giorgio Giannone.
 
+## Variational Autoencoder
+Variational Autoencoders (VAEs) are a type of latent variable model that can be used for generative modelling. The VAEs consists of a decoder part and an encoder part, by optimizing the Evidence Lower Bound (ELBO). 
+
+Once the model is trained, it can generate new examples by 
+![\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}](https://latex.codecogs.com/svg.latex?x%3D%5Cfrac%7B-b%5Cpm%5Csqrt%7Bb%5E2-4ac%7D%7D%7B2a%7D)
+
 ## Structure
 In this repo you will find the three different model classes in the models directory, and the necessary training loops for each model is found in the training directory.
 Additionally the attention, encoder and decoder, and other modules used in these models can be found in the layers directory.
