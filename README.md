@@ -24,7 +24,18 @@ An extension of the standard VAE is the [Ladder VAE](https://arxiv.org/pdf/1602.
 
 
 ## Deep Recurrent Attentive Writer
+The Deep Recurrent Attentive Writer (DRAW) model is a VAE like model, trained with stochastic gradient descent, proposed in the [original DRAW paper](https://arxiv.org/pdf/1502.04623.pdf). The main difference is, that the DRAW model iteratively generates the final output instead of doing it in a single shot like a standard VAE. Additionally, the encoder and decoder uses recurrent networks instead of standard linear networks.
 
+### The Network
+The model goes through T iterations, where we denote each time-step iteration by t. When using a diagonal Gaussian for the latent distribution, we have:
+
+<img src="https://latex.codecogs.com/svg.image?\mu_t&space;=&space;W(h_t^{enc}),&space;\;\;\;&space;\;\;&space;\sigma_t&space;=&space;\exp(W(h_t^{enc}))" title="\mu_t = W(h_t^{enc}), \;\;\; \;\; \sigma_t = \exp(W(h_t^{enc}))" />
+
+Samples are then drawn from the latent distribution <img src="https://latex.codecogs.com/svg.image?z_t&space;\sim&space;Q(z_t|h_t^{enc})" title="z_t \sim Q(z_t|h_t^{enc})" />, which we pass to the decoder, which outputs <img src="https://latex.codecogs.com/svg.image?h_t^{dec}" title="h_t^{dec}" /> that is added to the canvas, <img src="https://latex.codecogs.com/svg.image?c_t" title="c_t" />, using the write operation. 
+
+At each time-step, <img src="https://latex.codecogs.com/svg.image?t&space;=&space;1,...,T" title="t = 1,...,T" />, we compute:
+
+<img src="https://latex.codecogs.com/svg.image?\hat{x}_t&space;=&space;x&space;-&space;\sigma(c_{t-1})\\r_t&space;=&space;read(x_t,\hat{x}_t,h_{t-1}^{dec})\\h_t^{enc}&space;=&space;RNN^{enc}(h_{t-1}^{enc},&space;[r_t,&space;h_{t-1}^{dec}]])\\z_t&space;\sim&space;Q(z_t|h_t^{enc})\\h_t^{dec}&space;=&space;RNN^{dec}(h_{t-1}^{dec},&space;z_t)\\c_t&space;=&space;c_{t-1}&space;&plus;&space;write(h_t^{dec})&space;" title="\hat{x}_t = x - \sigma(c_{t-1})\\r_t = read(x_t,\hat{x}_t,h_{t-1}^{dec})\\h_t^{enc} = RNN^{enc}(h_{t-1}^{enc}, [r_t, h_{t-1}^{dec}]])\\z_t \sim Q(z_t|h_t^{enc})\\h_t^{dec} = RNN^{dec}(h_{t-1}^{dec}, z_t)\\c_t = c_{t-1} + write(h_t^{dec}) " />
 
 
 ## Structure
