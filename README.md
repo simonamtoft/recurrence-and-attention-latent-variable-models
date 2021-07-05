@@ -35,8 +35,23 @@ Samples are then drawn from the latent distribution <img src="https://latex.code
 
 <img src="https://latex.codecogs.com/svg.image?\!\!\!\!\!\!\!\!\!&space;\hat{x}_t&space;=&space;x&space;-&space;\sigma(c_{t-1})\\r_t&space;=&space;read(x_t,\hat{x}_t,h_{t-1}^{dec})\\h_t^{enc}&space;=&space;RNN^{enc}(h_{t-1}^{enc},&space;[r_t,&space;h_{t-1}^{dec}]])\\z_t&space;\sim&space;Q(z_t|h_t^{enc})\\h_t^{dec}&space;=&space;RNN^{dec}(h_{t-1}^{dec},&space;z_t)\\c_t&space;=&space;c_{t-1}&space;&plus;&space;write(h_t^{dec})&space;" title="\!\!\!\!\!\!\!\!\! \hat{x}_t = x - \sigma(c_{t-1})\\r_t = read(x_t,\hat{x}_t,h_{t-1}^{dec})\\h_t^{enc} = RNN^{enc}(h_{t-1}^{enc}, [r_t, h_{t-1}^{dec}]])\\z_t \sim Q(z_t|h_t^{enc})\\h_t^{dec} = RNN^{dec}(h_{t-1}^{dec}, z_t)\\c_t = c_{t-1} + write(h_t^{dec}) " />
 
+### Data Generation
+Generating images from the model is then done by iteratively picking latent samples from the prior distribution, and updating the canvas with the decoder:
 
-## Structure
+<img src="https://latex.codecogs.com/svg.image?\!\!\!\!\!\!\!\!\!\tilde{z}_t&space;\sim&space;p(z_t)\\\tilde{h}_t^{dec}&space;=&space;RNN^{dec}(\tilde{h}_{t-1}^{dec},\tilde{z})\\\tilde{c}_t&space;=&space;\tilde{c}_{t-1}&space;&plus;&space;write(\tilde{h}_t^{dec})\\\tilde{x}&space;\sim&space;D(X|\tilde{c}_T)&space;" title="\!\!\!\!\!\!\!\!\!\tilde{z}_t \sim p(z_t)\\\tilde{h}_t^{dec} = RNN^{dec}(\tilde{h}_{t-1}^{dec},\tilde{z})\\\tilde{c}_t = \tilde{c}_{t-1} + write(\tilde{h}_t^{dec})\\\tilde{x} \sim D(X|\tilde{c}_T) " />
+
+### Read and Write operations
+Finally we have the read and write operations. These can be used both with and without attention.
+
+In the version without attention, the entire input image is passed to the encoder for every time-step, and the decoder modifies the entire canvas at every step. The two operations are then given by
+
+<img src="https://latex.codecogs.com/svg.image?\!\!\!\!\!\!\!\!read(x,&space;\hat{x}_t,&space;h_{t-1}^{dec})&space;=&space;[x,&space;\hat{x}_t]\\write(h_t^{dec})&space;=&space;W(h_t^{dec})&space;" title="\!\!\!\!\!\!\!\!read(x, \hat{x}_t, h_{t-1}^{dec}) = [x, \hat{x}_t]\\write(h_t^{dec}) = W(h_t^{dec}) " />
+
+In oder to use attention when reading and writing, a two-dimensional attention form is used with an array of two-dimensional Gaussian filters. For an input of size A x B, the model generates five parameters from the output of the decoder:
+
+<img src="https://latex.codecogs.com/svg.image?\!\!\!\!\!\!\!\!\!(\tilde{g}_X,&space;\tilde{g}_Y,&space;\log&space;\sigma^2,&space;\log&space;\tilde{\delta},&space;\log&space;\gamma)&space;=&space;W(h^{dec}_t)\\g_X&space;=&space;\frac{A&plus;1}{2}(\tilde{g}_X&space;&plus;&space;1)\\g_X&space;=&space;\frac{A&plus;1}{2}(\tilde{g}_X&space;&plus;&space;1)\\&space;\delta&space;=&space;\frac{\max(A,B)&space;-&space;1}{N&space;-&space;1}&space;\tilde{\delta}" title="\!\!\!\!\!\!\!\!\!(\tilde{g}_X, \tilde{g}_Y, \log \sigma^2, \log \tilde{\delta}, \log \gamma) = W(h^{dec}_t)\\g_X = \frac{A+1}{2}(\tilde{g}_X + 1)\\g_X = \frac{A+1}{2}(\tilde{g}_X + 1)\\ \delta = \frac{\max(A,B) - 1}{N - 1} \tilde{\delta}" />
+
+## Repo Structure
 In this repo you will find the three different model classes in the models directory, and the necessary training loops for each model is found in the training directory.
 Additionally the attention, encoder and decoder, and other modules used in these models can be found in the layers directory.
 
