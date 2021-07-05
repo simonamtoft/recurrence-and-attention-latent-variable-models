@@ -10,7 +10,7 @@ The project is carried out by [Simon Amtoft Pedersen](https://github.com/simonam
 ## Variational Autoencoder
 Variational Autoencoders (VAEs) are a type of latent variable model that can be used for generative modelling. The VAEs consists of a decoder part and an encoder part, by optimizing the Evidence Lower Bound (ELBO). 
 
-Once the model is trained, it can generate new examples by <img src="https://latex.codecogs.com/svg.image?\bg_white&space;z&space;\sim&space;N(z|0,1)" title="\bg_white z \sim N(z|0,1)" />
+Once the model is trained, it can generate new examples by <img src="https://latex.codecogs.com/svg.image?\inline&space;z&space;\sim&space;N(z|0,1)" title="\inline z \sim N(z|0,1)" />
 
 ## Structure
 In this repo you will find the three different model classes in the models directory, and the necessary training loops for each model is found in the training directory.
