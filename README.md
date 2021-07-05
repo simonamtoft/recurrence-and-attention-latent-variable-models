@@ -13,7 +13,7 @@ Variational Autoencoders (VAEs) are a type of latent variable model that can be 
 Once the model is trained, it can generate new examples by sampling <img src="https://latex.codecogs.com/svg.image?\inline&space;z&space;\sim&space;N(z|0,1)" title="\inline z \sim N(z|0,1)" /> and then passing this sample through the decoder to generate a new example <img src="https://latex.codecogs.com/svg.image?\inline&space;x&space;\sim&space;N(x|\mu(z),&space;diag(\sigma^2(z)))" title="\inline x \sim N(x|\mu(z), diag(\sigma^2(z)))" />.
 
 
-# Ladder VAE
+### Ladder VAE
 An extension of the standard VAE is the [Ladder VAE](https://arxiv.org/pdf/1602.02282.pdf), which adds sharing of information and parameters between the encoder and decoder. 
 
 ## Deep Recurrent Attentive Writer
