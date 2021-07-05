@@ -20,7 +20,7 @@ An extension of the standard VAE is the [Ladder VAE](https://arxiv.org/pdf/1602.
 
 <img src="https://latex.codecogs.com/svg.image?\inline&space;p_\theta(z_i&space;|&space;z_{i&plus;1})&space;=&space;N(z_i|&space;\mu_{p,i},&space;\sigma^2_{p,i}),&space;\;\;\;\;&space;p_\theta(Z_L)&space;=&space;N(z_L|0,I)" title="\inline p_\theta(z_i | z_{i+1}) = N(z_i| \mu_{p,i}, \sigma^2_{p,i}), \;\;\;\; p_\theta(Z_L) = N(z_L|0,I)" />
 
-<img src="https://latex.codecogs.com/svg.image?\inline&space;p_\theta(x|z_1)&space;=&space;N(x|\mu_{p,0},\sigma^2_{p,0})" title="\inline p_\theta(x|z_1) = N(x|\mu_{p,0},\sigma^2_{p,0})" />
+<img src="https://latex.codecogs.com/svg.image?p_\theta(x|z_1)&space;=&space;N(x|\mu_{p,0},\sigma^2_{p,0})" title="p_\theta(x|z_1) = N(x|\mu_{p,0},\sigma^2_{p,0})" />
 
 
 ## Deep Recurrent Attentive Writer
