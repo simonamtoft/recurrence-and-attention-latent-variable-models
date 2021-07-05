@@ -65,6 +65,8 @@ Finally, we define the read and write operations with the attention mechanism
 
 <img src="https://latex.codecogs.com/svg.image?\!\!\!\!\!\!\!\!\!read(x,&space;\hat{x}_t,&space;h_{t-1}^{dec})&space;=&space;\gamma[F_Y&space;x&space;F_X^T,&space;F_Y&space;\hat{x}&space;F_X^T]\\w_t&space;=&space;W(h_t^{dec})\\write(h_t^{dec})&space;=&space;\frac{1}{\hat{\gamma}}&space;\hat{F}_Y^T&space;w_t&space;\hat{F}_X&space;" title="\!\!\!\!\!\!\!\!\!read(x, \hat{x}_t, h_{t-1}^{dec}) = \gamma[F_Y x F_X^T, F_Y \hat{x} F_X^T]\\w_t = W(h_t^{dec})\\write(h_t^{dec}) = \frac{1}{\hat{\gamma}} \hat{F}_Y^T w_t \hat{F}_X " />
 
+Where <img src="https://latex.codecogs.com/svg.image?w_t" title="w_t" /> is the N x N writing patch emitted by the decoder.
+
 ## Repo Structure
 In this repo you will find the three different model classes in the models directory, and the necessary training loops for each model is found in the training directory.
 Additionally the attention, encoder and decoder, and other modules used in these models can be found in the layers directory.
