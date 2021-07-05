@@ -51,6 +51,16 @@ In oder to use attention when reading and writing, a two-dimensional attention f
 
 <img src="https://latex.codecogs.com/svg.image?\!\!\!\!\!\!\!\!\!(\tilde{g}_X,&space;\tilde{g}_Y,&space;\log&space;\sigma^2,&space;\log&space;\tilde{\delta},&space;\log&space;\gamma)&space;=&space;W(h^{dec}_t)\\g_X&space;=&space;\frac{A&plus;1}{2}(\tilde{g}_X&space;&plus;&space;1)\\g_X&space;=&space;\frac{A&plus;1}{2}(\tilde{g}_X&space;&plus;&space;1)\\&space;\delta&space;=&space;\frac{\max(A,B)&space;-&space;1}{N&space;-&space;1}&space;\tilde{\delta}\\\mu_X^i&space;=&space;g_X&space;&plus;&space;(i&space;-&space;N/2&space;-&space;0.5)&space;\delta\\\mu_Y^j&space;=&space;g_Y&space;&plus;&space;(j&space;-&space;N/2&space;-&space;0.5)&space;\delta&space;" title="\!\!\!\!\!\!\!\!\!(\tilde{g}_X, \tilde{g}_Y, \log \sigma^2, \log \tilde{\delta}, \log \gamma) = W(h^{dec}_t)\\g_X = \frac{A+1}{2}(\tilde{g}_X + 1)\\g_X = \frac{A+1}{2}(\tilde{g}_X + 1)\\ \delta = \frac{\max(A,B) - 1}{N - 1} \tilde{\delta}\\\mu_X^i = g_X + (i - N/2 - 0.5) \delta\\\mu_Y^j = g_Y + (j - N/2 - 0.5) \delta " />
 
+From this, the horizontal and veritcal filterbank matrices is defined
+
+<img src="https://latex.codecogs.com/svg.image?\!\!\!\!\!\!\!\!\!F_X[i,a]&space;=&space;\frac{1}{Z_X}&space;\exp\left(-\frac{(a-\mu_X^i)^2}{2\sigma^2}\right)\\F_Y[j,b]&space;=&space;\frac{1}{Z_Y}&space;\exp\left(-\frac{(b-\mu_Y^i)^2}{2\sigma^2}\right)&space;" title="\!\!\!\!\!\!\!\!\!F_X[i,a] = \frac{1}{Z_X} \exp\left(-\frac{(a-\mu_X^i)^2}{2\sigma^2}\right)\\F_Y[j,b] = \frac{1}{Z_Y} \exp\left(-\frac{(b-\mu_Y^i)^2}{2\sigma^2}\right) " />
+
+Where <img src="https://latex.codecogs.com/svg.image?Z_X" title="Z_X" /> and <img src="https://latex.codecogs.com/svg.image?Z_Y" title="Z_Y" /> are normalisation constraints, such that <img src="https://latex.codecogs.com/svg.image?\sum_a&space;F_X[i,a]&space;=&space;1" title="\sum_a F_X[i,a] = 1" /> and <img src="https://latex.codecogs.com/svg.image?\sum_b&space;F_Y[j,b]&space;=&space;1" title="\sum_b F_Y[j,b] = 1" />.
+
+Finally, we define the read and write operations with the attention mechanism
+
+<img src="https://latex.codecogs.com/svg.image?\!\!\!\!\!\!\!\!\!read(x,&space;\hat{x}_t,&space;h_{t-1}^{dec})&space;=&space;\gamma[F_Y&space;x&space;F_X^T,&space;F_Y&space;\hat{x}&space;F_X^T]\\w_t&space;=&space;W(h_t^{dec})\\write(h_t^{dec})&space;=&space;\frac{1}{\hat{\gamma}}&space;\hat{F}_Y^T&space;w_t&space;\hat{F}_X&space;" title="\!\!\!\!\!\!\!\!\!read(x, \hat{x}_t, h_{t-1}^{dec}) = \gamma[F_Y x F_X^T, F_Y \hat{x} F_X^T]\\w_t = W(h_t^{dec})\\write(h_t^{dec}) = \frac{1}{\hat{\gamma}} \hat{F}_Y^T w_t \hat{F}_X " />
+
 ## Repo Structure
 In this repo you will find the three different model classes in the models directory, and the necessary training loops for each model is found in the training directory.
 Additionally the attention, encoder and decoder, and other modules used in these models can be found in the layers directory.
