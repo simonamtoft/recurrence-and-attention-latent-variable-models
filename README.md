@@ -55,7 +55,11 @@ From this, the horizontal and veritcal filterbank matrices is defined
 
 <img src="https://latex.codecogs.com/svg.image?\!\!\!\!\!\!\!\!\!F_X[i,a]&space;=&space;\frac{1}{Z_X}&space;\exp\left(-\frac{(a-\mu_X^i)^2}{2\sigma^2}\right)\\F_Y[j,b]&space;=&space;\frac{1}{Z_Y}&space;\exp\left(-\frac{(b-\mu_Y^i)^2}{2\sigma^2}\right)&space;" title="\!\!\!\!\!\!\!\!\!F_X[i,a] = \frac{1}{Z_X} \exp\left(-\frac{(a-\mu_X^i)^2}{2\sigma^2}\right)\\F_Y[j,b] = \frac{1}{Z_Y} \exp\left(-\frac{(b-\mu_Y^i)^2}{2\sigma^2}\right) " />
 
-Where <img src="https://latex.codecogs.com/svg.image?Z_X" title="Z_X" /> and <img src="https://latex.codecogs.com/svg.image?Z_Y" title="Z_Y" /> are normalisation constraints, such that <img src="https://latex.codecogs.com/svg.image?\sum_a&space;F_X[i,a]&space;=&space;1" title="\sum_a F_X[i,a] = 1" /> and <img src="https://latex.codecogs.com/svg.image?\sum_b&space;F_Y[j,b]&space;=&space;1" title="\sum_b F_Y[j,b] = 1" />.
+Where <img src="https://latex.codecogs.com/svg.image?Z_X" title="Z_X" /> and <img src="https://latex.codecogs.com/svg.image?Z_Y" title="Z_Y" /> are normalisation constraints, such that 
+
+<img src="https://latex.codecogs.com/svg.image?\sum_a&space;F_X[i,a]&space;=&space;1" title="\sum_a F_X[i,a] = 1" /> 
+
+<img src="https://latex.codecogs.com/svg.image?\sum_b&space;F_Y[j,b]&space;=&space;1" title="\sum_b F_Y[j,b] = 1" />
 
 Finally, we define the read and write operations with the attention mechanism
 
