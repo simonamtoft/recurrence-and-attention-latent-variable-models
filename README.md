@@ -14,7 +14,12 @@ Once the model is trained, it can generate new examples by sampling <img src="ht
 
 
 ### Ladder VAE
-An extension of the standard VAE is the [Ladder VAE](https://arxiv.org/pdf/1602.02282.pdf), which adds sharing of information and parameters between the encoder and decoder. 
+An extension of the standard VAE is the [Ladder VAE](https://arxiv.org/pdf/1602.02282.pdf), which adds sharing of information and parameters between the encoder and decoder by splitting the latent variables into L layers, such that the model can be described by:
+
+<img src="https://latex.codecogs.com/svg.image?\inline&space;p_\theta(z)&space;=&space;p_\theta(Z_L)\prod_{i=1}^{L-1}&space;p_\theta(z_i&space;|z_{i&plus;1})&space;" title="\inline p_\theta(z) = p_\theta(Z_L)\prod_{i=1}^{L-1} p_\theta(z_i |z_{i+1}) " />
+
+<img src="https://latex.codecogs.com/svg.image?\inline&space;p_\theta(z_i&space;|&space;z_{i&plus;1})&space;=&space;N(z_i|&space;\mu_{p,i},&space;\sigma^2_{p,i}),&space;\;\;\;\;&space;p_\theta(Z_L)&space;=&space;N(z_L|0,I\;" title="\inline p_\theta(z_i | z_{i+1}) = N(z_i| \mu_{p,i}, \sigma^2_{p,i}), \;\;\;\; p_\theta(Z_L) = N(z_L|0,I\;" />
+
 
 ## Deep Recurrent Attentive Writer
 
