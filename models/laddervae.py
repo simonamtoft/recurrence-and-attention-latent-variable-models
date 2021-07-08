@@ -105,9 +105,16 @@ class Decoder(nn.Module):
 
 class LadderVAE(VariationalAutoencoder):
     """Ladder Variational Autoencoder"""
-    def __init__(self, dims):
-        [x_dim, h_dim, z_dim] = dims
-        super(LadderVAE, self).__init__([x_dim, h_dim, z_dim[0]])
+    def __init__(self, config, x_dim):
+        h_dim = config['h_dim']
+        z_dim = config['z_dim']
+        dims = [x_dim, h_dim, z_dim]
+        
+        _config = config.copy()
+        _config['z_dim'] = config['z_dim'][0]
+
+        super(LadderVAE, self).__init__(_config, x_dim)
+
 
         # define encoder and decoder layers
         neuron_dims = [x_dim, *h_dim]
@@ -149,7 +156,7 @@ class LadderVAE(VariationalAutoencoder):
                 z, kl = decoder(z, l_mu, l_log_var)
                 self.kld += self._kld(*kl)
 
-        return self.reconstruction(z)
+        return self.reconstruction(z), self.kld
 
     def sample(self, z):
         for decoder in self.decoder:

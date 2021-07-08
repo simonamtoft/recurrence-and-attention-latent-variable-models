@@ -30,7 +30,7 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
         )
     
     # linear deterministic warmup
-    if config["lr_warmup"]:
+    if config["kl_warmup"]:
         gamma = DeterministicWarmup(n=50, t_max=1)
     else:
         gamma = DeterministicWarmup(n=1, t_max=1)
@@ -42,6 +42,7 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
         
         # Train Epoch
         model.train()
+        alpha = next(gamma)
         elbo_train = []
         kld_train = []
         recon_train = []
@@ -54,18 +55,18 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
             x_hat, kld = model(x)
 
             # Compute losses
-            recon = -bce_loss(x_hat, x)
-            elbo = recon - kld
-            L = -torch.mean(elbo)
+            recon = torch.mean(bce_loss(x_hat, x))
+            kl = torch.mean(kld)
+            loss = recon + alpha * kl
 
             # Update gradients
-            L.backward()
+            loss.backward()
             optimizer.step()
             optimizer.zero_grad()
 
             # save losses
-            elbo_train.append(torch.mean(elbo).item())
-            kld_train.append(torch.mean(kld).item())
+            elbo_train.append(torch.mean(-loss).item())
+            kld_train.append(torch.mean(kl).item())
             recon_train.append(torch.mean(recon).item())
         
         # Log train stuff
@@ -88,18 +89,18 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
             for x, _ in iter(val_loader):
                 batch_size = x.size(0)
 
-                 # Pass batch through model
+                # Pass batch through model
                 x = x.view(batch_size, -1)
                 x = Variable(x).to(device)
                 x_hat, kld = model(x)
 
                 # Compute losses
-                recon = -bce_loss(x_hat, x)
-                elbo = recon - next(gamma) * kld
-                L = -torch.mean(elbo)
+                recon = torch.mean(bce_loss(x_hat, x))
+                kl = torch.mean(kld)
+                loss = recon + alpha * kl
 
                 # save losses
-                elbo_val.append(torch.mean(elbo).item())
+                elbo_val.append(torch.mean(-loss).item())
                 kld_val.append(torch.mean(kld).item())
                 recon_val.append(torch.mean(recon).item())
         
@@ -111,11 +112,14 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
         }, commit=False)
 
         # Sample from model
-        x_mu = Variable(torch.randn(16, config['z_dim'])).to(device)
+        if isinstance(config['z_dim'], list):
+            x_mu = Variable(torch.randn(16, config['z_dim'][0])).to(device)
+        else:
+            x_mu = Variable(torch.randn(16, config['z_dim'])).to(device)
         x_sample = model.sample(x_mu)
 
         # Log images to wandb
-        log_images(x_hat, x_sample)
+        log_images(x_hat, x_sample, epoch)
     
     # Finalize training
     wandb.finish()

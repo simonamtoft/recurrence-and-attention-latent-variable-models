@@ -19,5 +19,6 @@ module load cuda/11.1
 module load cudnn/v8.0.4.30-prod-cuda-11.1
 
 source venv/bin/activate
-# python run_draw.py
-python run_vae.py
+# python run_vae.py
+# python run_lvae.py
+python run_draw.py

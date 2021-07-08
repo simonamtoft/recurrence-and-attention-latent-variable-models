@@ -24,20 +24,20 @@ mnist_data = MNIST(
 
 # Define config
 config = {
-    'batch_size': 1,
-    'epochs': 250,
+    'batch_size': 128,
+    'epochs': 2000,
     'lr': 1e-3,
-    # 'lr_decay': {
-    #     'n_epochs': 500,
-    #     'offset': 0,
-    #     'delay': 25,
-    # },
-    'kl_weight': [1, 1], #0.1, 1.5
+    'lr_decay': {
+        'n_epochs': 4000,
+        'delay': 200,
+        'offset': 0,
+    },
     'h_dim': 256,
     'z_dim': 32, 
     'T': 10,
     'N': 12,
-    'attention': 'filterbank', # filterbank, base
+    'attention': 'base', # filterbank, base
+    'kl_warmup': True,
 }
 
 # split into training and validation sets
@@ -67,4 +67,4 @@ x_shape = images.shape[2:4]
 model = DRAW(config, x_shape).to(device)
 
 # Train model
-train_draw(model, config, train_loader, val_loader, "DRAW")
+train_draw(model, config, train_loader, val_loader, "vae")

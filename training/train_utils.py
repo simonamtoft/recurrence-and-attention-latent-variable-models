@@ -36,24 +36,26 @@ def plt_img_save(img, name='log_image.png'):
     plt.close()
 
 
-def log_images(x_recon, x_sample):
-    convert_img(x_recon, "recon")
-    convert_img(x_sample, "sample")
+def log_images(x_recon, x_sample, epoch):
+    convert_img(x_recon, "recon", epoch)
+    convert_img(x_sample, "sample", epoch)
 
     # Log the images to wandb
+    name_1 = f"recon{epoch}.png"
+    name_2 = f"sample{epoch}.png"
     wandb.log({
-        "Reconstruction": wandb.Image("recon.png"),
-        "Sample": wandb.Image("sample.png")
+        "Reconstruction": wandb.Image(name_1),
+        "Sample": wandb.Image(name_2)
     }, commit=True)
 
     # Delete the logged images
-    os.remove("recon.png")
-    os.remove("sample.png")
+    os.remove(name_1)
+    os.remove(name_2)
 
 
-def convert_img(img, img_name):
-    name_jpg = img_name + '.jpg'
-    name_png = img_name + '.png'
+def convert_img(img, img_name, epoch):
+    name_jpg = img_name + str(epoch) + '.jpg'
+    name_png = img_name + str(epoch) + '.png'
 
     # Save batch as single image
     save_image(img, name_jpg)
