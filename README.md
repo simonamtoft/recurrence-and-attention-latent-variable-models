@@ -22,6 +22,7 @@ An extension of the standard VAE is the [Ladder VAE](https://arxiv.org/pdf/1602.
 
 <img src="https://latex.codecogs.com/svg.image?p_\theta(x|z_1)&space;=&space;N(x|\mu_{p,0},\sigma^2_{p,0})" title="p_\theta(x|z_1) = N(x|\mu_{p,0},\sigma^2_{p,0})" />
 
+A lot of the code for the Ladder VAE is taken from [Wohlert semi-supervised pytorch project](https://github.com/wohlert/semi-supervised-pytorch).
 
 ## Deep Recurrent Attentive Writer
 The Deep Recurrent Attentive Writer (DRAW) model is a VAE like model, trained with stochastic gradient descent, proposed in the [original DRAW paper](https://arxiv.org/pdf/1502.04623.pdf). The main difference is, that the DRAW model iteratively generates the final output instead of doing it in a single shot like a standard VAE. Additionally, the encoder and decoder uses recurrent networks instead of standard linear networks.
