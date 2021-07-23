@@ -69,25 +69,37 @@ Finally, we define the read and write operations with the attention mechanism
 Where <img src="https://latex.codecogs.com/svg.image?w_t" title="w_t" /> is the N x N writing patch emitted by the decoder.
 
 ## Results
-I've trained and compared the results for the standard VAE, the Ladder VAE and the DRAW model with base attention (the filterbank attention version is a work in progress). Below the final value of the ELBO, KL and Reconstruction metrics are reported for both the train, validation and test set.
-### Train Losses
-|| ELBO  | KL | Reconstruction |
+I've trained and compared the results for the standard VAE, the Ladder VAE and the DRAW model with base attention. Below the final value of the ELBO, KL and Reconstruction metrics are reported for both the train, validation and test set. Additionally the loss plots for training and validation is shown, and finally some reconstruction and samples from the three different models are shown.
+
+### Loss Plots
+
+### Table Evaluations
+|Train| ELBO  | KL | Reconstruction |
 | --- | --- | --- | --- |
 |Standard VAE       | | | |
 |Ladder VAE         |  | | |
 |DRAW Base Attention|  | | |
-### Validation Losses
-|| ELBO  | KL | Reconstruction |
+
+|Validation| ELBO  | KL | Reconstruction |
 | --- | --- | --- | --- |
 |Standard VAE       | | | |
 |Ladder VAE         |  | | |
 |DRAW Base Attention|  | | |
-### Test Losses
-|| ELBO  | KL | Reconstruction |
+
+|Test| ELBO  | KL | Reconstruction |
 | --- | --- | --- | --- |
 |Standard VAE       | | | |
 |Ladder VAE         |  | | |
 |DRAW Base Attention|  | | |
+
+### Reconstruction
+
+
+### Model Samples
+
+
+## Comment on DRAW with Filterbank Attention
+The filterbank attention version of the DRAW model is somewhat of a work-in-progress. It seems to be implemented correctly (e.g. by expecting the notebook) using a batch size of one, but very slow computationally. Additionally when running only with a batch size of one, each epoch takes too long to make it feasible. In order to make this model able to work in practice
 
 ## Repo Structure
 In this repo you will find the three different model classes in the models directory, and the necessary training loops for each model is found in the training directory.
