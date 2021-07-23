@@ -68,7 +68,20 @@ Finally, we define the read and write operations with the attention mechanism
 Where <img src="https://latex.codecogs.com/svg.image?w_t" title="w_t" /> is the N x N writing patch emitted by the decoder.
 
 ## Results
-
+I've trained and compared the results for the standard VAE, the Ladder VAE and the DRAW model with base attention (the filterbank attention version is a work in progress). Below the final value of the ELBO, KL and Reconstruction metrics are reported for both the train, validation and test set.
+### Train Losses
+|| ELBO  | KL | Reconstruction |
+| --- | --- | --- | --- |
+|VAE                | | | |
+|Ladder VAE         |  | | |
+|DRAW Base Attention|  | | |
+### Validation Losses
+|| ELBO  | KL | Reconstruction |
+| --- | --- | --- | --- |
+|VAE                | | | |
+|Ladder VAE         |  | | |
+|DRAW Base Attention|  | | |
+### Test Losses
 || ELBO  | KL | Reconstruction |
 | --- | --- | --- | --- |
 |VAE                | | | |
