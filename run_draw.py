@@ -67,4 +67,4 @@ x_shape = images.shape[2:4]
 model = DRAW(config, x_shape).to(device)
 
 # Train model
-train_draw(model, config, train_loader, val_loader, "vae")
+train_draw(model, config, train_loader, val_loader, "generative-project")

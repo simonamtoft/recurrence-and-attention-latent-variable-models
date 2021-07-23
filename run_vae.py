@@ -61,4 +61,4 @@ val_loader = DataLoader(
 model = VariationalAutoencoder(config, x_dim=784).to(device)
 
 # Train model
-train_vae(model, config, train_loader, val_loader, 'vae')
+train_vae(model, config, train_loader, val_loader, 'generative-project')

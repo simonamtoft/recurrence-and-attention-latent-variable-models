@@ -1,3 +1,4 @@
+import os
 import wandb
 import json
 from tqdm import tqdm
@@ -122,5 +123,9 @@ def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
             # Log images to wandb
             log_images(x_hat, x_sample, epoch)
     
+    # Save final model
+    torch.save('draw_model.pt')
+    wandb.save('draw_model.pt')
+
     # Finalize training
     wandb.finish()

@@ -1,3 +1,4 @@
+import os
 import wandb
 import json
 from tqdm import tqdm
@@ -121,5 +122,9 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
         # Log images to wandb
         log_images(x_hat, x_sample, epoch)
     
+    # Save final model
+    torch.save('vae_model.pt')
+    wandb.save('vae_model.pt')
+
     # Finalize training
     wandb.finish()
