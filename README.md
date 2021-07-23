@@ -72,19 +72,19 @@ I've trained and compared the results for the standard VAE, the Ladder VAE and t
 ### Train Losses
 || ELBO  | KL | Reconstruction |
 | --- | --- | --- | --- |
-|VAE                | | | |
+|Standard VAE       | | | |
 |Ladder VAE         |  | | |
 |DRAW Base Attention|  | | |
 ### Validation Losses
 || ELBO  | KL | Reconstruction |
 | --- | --- | --- | --- |
-|VAE                | | | |
+|Standard VAE       | | | |
 |Ladder VAE         |  | | |
 |DRAW Base Attention|  | | |
 ### Test Losses
 || ELBO  | KL | Reconstruction |
 | --- | --- | --- | --- |
-|VAE                | | | |
+|Standard VAE       | | | |
 |Ladder VAE         |  | | |
 |DRAW Base Attention|  | | |
 
