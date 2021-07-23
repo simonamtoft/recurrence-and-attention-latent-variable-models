@@ -67,6 +67,14 @@ Finally, we define the read and write operations with the attention mechanism
 
 Where <img src="https://latex.codecogs.com/svg.image?w_t" title="w_t" /> is the N x N writing patch emitted by the decoder.
 
+## Results
+
+|| ELBO  | KL | Reconstruction |
+| --- | --- | --- | --- |
+|VAE                | | | |
+|Ladder VAE         |  | | |
+|DRAW Base Attention|  | | |
+
 ## Repo Structure
 In this repo you will find the three different model classes in the models directory, and the necessary training loops for each model is found in the training directory.
 Additionally the attention, encoder and decoder, and other modules used in these models can be found in the layers directory.
