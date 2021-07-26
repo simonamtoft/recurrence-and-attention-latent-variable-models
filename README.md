@@ -74,17 +74,17 @@ I've trained and compared the results for the standard VAE, the Ladder VAE and t
 ### Loss Plots
 
 ### Table Evaluations
-|Train| ELBO  | KL | Reconstruction |
+|Train              | ELBO    | KL    | Reconstruction |
 | --- | --- | --- | --- |
-|Standard VAE       | | | |
-|Ladder VAE         |  | | |
-|DRAW Base Attention|  | | |
+|Standard VAE       | -121.88 | 25.96 | 95.92|
+|Ladder VAE         | -123.75 | 25.18 | 98.57|
+|DRAW Base Attention| -84.04  | 25.81 | 58.22|
 
-|Validation| ELBO  | KL | Reconstruction |
+|Validation         | ELBO      | KL    | Reconstruction |
 | --- | --- | --- | --- |
-|Standard VAE       | | | |
-|Ladder VAE         |  | | |
-|DRAW Base Attention|  | | |
+|Standard VAE       | -124.38   | 25.93 | 98.45 |
+|Ladder VAE         | -124.12   | 24.98 | 99.14 |
+|DRAW Base Attention| -85.43    | 25.88 | 59.55 |
 
 |Test| ELBO  | KL | Reconstruction |
 | --- | --- | --- | --- |
