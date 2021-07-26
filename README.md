@@ -97,7 +97,7 @@ I've trained and compared the results for the standard VAE, the Ladder VAE and t
 ![alt text](https://github.com/simonamtoft/ml-library/blob/main/results/images.png?raw=true)
 
 ## Comment on DRAW with Filterbank Attention
-The filterbank attention version of the DRAW model is somewhat of a work-in-progress. It seems to be implemented correctly (e.g. by expecting the notebook) using a batch size of one, but very slow computationally. Additionally when running only with a batch size of one, each epoch takes too long to make it feasible. In order to make this model able to work in practice
+The filterbank attention version of the DRAW model is somewhat of a work-in-progress. It seems to be implemented correctly using a batch size of one, but very slow computationally. Additionally when running only with a batch size of one, each epoch takes too long to make it feasible. In order to make this model able to work in practice
 
 ## Repo Structure
 In this repo you will find the three different model classes in the models directory, and the necessary training loops for each model is found in the training directory.
