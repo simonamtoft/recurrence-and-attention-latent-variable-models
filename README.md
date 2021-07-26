@@ -72,6 +72,7 @@ Where <img src="https://latex.codecogs.com/svg.image?w_t" title="w_t" /> is the 
 I've trained and compared the results for the standard VAE, the Ladder VAE and the DRAW model with base attention. Below the final value of the ELBO, KL and Reconstruction metrics are reported for both the train, validation and test set. Additionally the loss plots for training and validation is shown, and finally some reconstruction and samples from the three different models are shown.
 
 ### Loss Plots
+![alt text](https://github.com/simonamtoft/ml-library/blob/main/results/loss%20plots.png?raw=true)
 
 ### Table Evaluations
 |Train              | ELBO    | KL    | Reconstruction |
