@@ -5,7 +5,7 @@ An orthogonal approach is to define hierarchies in time using a recurrent model.
 
 In this project, we study recurrent latent variable models for image generation. We focus on attentive models, i.e. models that use attention to decide where to focus on and what to update, refining their output with a sequential update. This is done by implementing the DRAW model, which is described in [the DRAW paper](https://arxiv.org/abs/1502.04623), both with basic and filterbank attention. The performance of the implemented DRAW model is then compared to both a standard VAE and a LadderVAE implementation.
 
-The project is carried out by [Simon Amtoft Pedersen](https://github.com/simonamtoft), and supervised by Giorgio Giannone.
+The project is carried out by [Simon Amtoft Pedersen](https://github.com/simonamtoft), and supervised by [Giorgio Giannone](https://georgosgeorgos.github.io/).
 
 ## Variational Autoencoder
 Variational Autoencoders (VAEs) are a type of latent variable model that can be used for generative modelling. The VAEs consists of a decoder part and an encoder part, that is trained by optimizing the Evidence Lower Bound (ELBO). The generative model is given by <img src="https://latex.codecogs.com/svg.image?\inline&space;p_\theta(z)&space;=&space;p_\theta(x|z)&space;p_\theta(z)" title="\inline p_\theta(z) = p_\theta(x|z) p_\theta(z)" /> and the samples are then drawn from the distribution by <img src="https://latex.codecogs.com/svg.image?\inline&space;z&space;\sim&space;p_\theta(z|x)&space;=&space;\frac{p_\theta(x|z)&space;p_\theta(z)}{p_\theta(x)}&space;" title="\inline z \sim p_\theta(z|x) = \frac{p_\theta(x|z) p_\theta(z)}{p_\theta(x)} " />. The objective is then to optimize <img src="https://latex.codecogs.com/svg.image?\inline&space;\sum_i&space;\mathcal{L_{\theta,\phi}}(x_i)" title="\inline \sum_i \mathcal{L_{\theta,\phi}}(x_i)" /> where ELBO is given as <img src="https://latex.codecogs.com/svg.image?\inline&space;\mathcal{L_{\theta,\phi}}(x)&space;=&space;\mathbb{E}_{q_\phi(z|x)}[\log&space;p_\theta&space;(x|z)]&space;&plus;&space;\mathbb{E}_{q_\phi(z|x)}\left[\log\frac{p_\theta(z)}{q_\phi(z|x)}\right]" title="\inline \mathcal{L_{\theta,\phi}}(x) = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta (x|z)] + \mathbb{E}_{q_\phi(z|x)}\left[\log\frac{p_\theta(z)}{q_\phi(z|x)}\right]" />.
@@ -72,6 +72,7 @@ Where <img src="https://latex.codecogs.com/svg.image?w_t" title="w_t" /> is the 
 I've trained and compared the results for the standard VAE, the Ladder VAE and the DRAW model with base attention. Below the final value of the ELBO, KL and Reconstruction metrics are reported for both the train, validation and test set. Additionally the loss plots for training and validation is shown, and finally some reconstruction and samples from the three different models are shown.
 
 ### Loss Plots
+![alt text](https://github.com/simonamtoft/ml-library/blob/main/results/loss%20plots.png?raw=true)
 
 ### Table Evaluations
 |Train              | ELBO    | KL    | Reconstruction |
@@ -92,14 +93,11 @@ I've trained and compared the results for the standard VAE, the Ladder VAE and t
 |Ladder VAE         |  | | |
 |DRAW Base Attention|  | | |
 
-### Reconstruction
-
-
-### Model Samples
-
+### Samples and Reconstructions
+![alt text](https://github.com/simonamtoft/ml-library/blob/main/results/images.png?raw=true)
 
 ## Comment on DRAW with Filterbank Attention
-The filterbank attention version of the DRAW model is somewhat of a work-in-progress. It seems to be implemented correctly (e.g. by expecting the notebook) using a batch size of one, but very slow computationally. Additionally when running only with a batch size of one, each epoch takes too long to make it feasible. In order to make this model able to work in practice
+The filterbank attention version of the DRAW model is somewhat of a work-in-progress. It seems to be implemented correctly using a batch size of one, but very slow computationally. Additionally when running only with a batch size of one, each epoch takes too long to make it feasible. In order to make this model able to work in practice
 
 ## Repo Structure
 In this repo you will find the three different model classes in the models directory, and the necessary training loops for each model is found in the training directory.
