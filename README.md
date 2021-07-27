@@ -69,7 +69,7 @@ Finally, we define the read and write operations with the attention mechanism
 Where <img src="https://latex.codecogs.com/svg.image?w_t" title="w_t" /> is the N x N writing patch emitted by the decoder.
 
 ## Results
-I've trained and compared the results for the standard VAE, the Ladder VAE and the DRAW model with base attention. Below the final value of the ELBO, KL and Reconstruction metrics are reported for both the train, validation and test set. Additionally the loss plots for training and validation is shown, and finally some reconstruction and samples from the three different models are shown.
+I've trained and compared the results for the standard VAE, the Ladder VAE and the DRAW model with base attention. Below the final value of the ELBO, KL and Reconstruction metrics are reported for both the train, validation and test set. Additionally the loss plots for training and validation is shown, and finally some reconstruction and samples from the three different models are shown. The dataset used is the standard [torchvision MNIST dataset](https://pytorch.org/vision/stable/datasets.html), which is transformed to be in binarized form.
 
 ### Loss Plots
 ![alt text](https://github.com/simonamtoft/ml-library/blob/main/results/loss%20plots.png?raw=true)
