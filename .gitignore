@@ -2,7 +2,6 @@ MNIST/*
 venv/*
 wandb/*
 *.pyc
-*.pt
 *.gz
 *.pyc
 *.jpg
