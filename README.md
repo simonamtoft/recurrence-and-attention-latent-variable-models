@@ -69,7 +69,9 @@ Finally, we define the read and write operations with the attention mechanism
 Where <img src="https://latex.codecogs.com/svg.image?w_t" title="w_t" /> is the N x N writing patch emitted by the decoder.
 
 ## Results
-I've trained and compared the results for the standard VAE, the Ladder VAE and the DRAW model with base attention. Below the final value of the ELBO, KL and Reconstruction metrics are reported for both the train, validation and test set. Additionally the loss plots for training and validation is shown, and finally some reconstruction and samples from the three different models are shown. The dataset used is the standard [torchvision MNIST dataset](https://pytorch.org/vision/stable/datasets.html), which is transformed to be in binarized form.
+The standard VAE, Ladder VAE and DRAW model with base attention have been trained on the standard [torchvision MNIST dataset](https://pytorch.org/vision/stable/datasets.html), which is transformed to be in binarized form. Below the final value of the ELBO, KL and Reconstruction metrics are reported for both the train, validation and test set. Additionally the loss plots for training and validation is shown, and finally some reconstruction and samples from the three different models are shown.
+
+The three models are trained in the exact same manner, without using a lot of tricks to improve upon their results. 
 
 ### Loss Plots
 ![alt text](https://github.com/simonamtoft/ml-library/blob/main/results/loss%20plots.png?raw=true)
@@ -96,10 +98,24 @@ I've trained and compared the results for the standard VAE, the Ladder VAE and t
 ### Samples and Reconstructions
 ![alt text](https://github.com/simonamtoft/ml-library/blob/main/results/images.png?raw=true)
 
-## Comment on DRAW with Filterbank Attention
+## Discussion
+
+
+### Comment on DRAW with Filterbank Attention
 The filterbank attention version of the DRAW model is somewhat of a work-in-progress. It [seems to be implemented correctly](https://github.com/simonamtoft/ml-library/blob/main/notebooks/A%20Look%20at%20Attention.ipynb) using a batch size of one, but very slow computationally. Additionally when running only with a batch size of one, each epoch takes too long to make it feasible. In order to make this model able to work in practice one would have to optimize it for batch sizes larger than one and improve the computational speed.
 
 ## Repo Structure
 In this repo you will find the three different model classes in the models directory, and the necessary training loops for each model is found in the training directory.
 Additionally the attention, encoder and decoder, and other modules used in these models can be found in the layers directory.
+
+## References
+[Diederik P. Kingma & Max Welling: An Introduction to Variational Autoencoders, arXiv:1906.02691](https://arxiv.org/abs/1906.02691)
+
+[Carl Doersch: Tutorial on Variational Autoencoders, arXiv:1606.05908](https://arxiv.org/abs/1606.05908)
+
+[Casper Kaae Sønderby, Tapani Raiko, Lars Maaløe, Søren Kaae Sønderby & Ole Winther, Ladder Variational Autoencoders, arXiv:1602.02282](https://arxiv.org/abs/1602.02282)
+
+[Karol Gregor, Ivo Danihelka, Alex Graves, Danilo Jimenez Rezende & Daan Wierstra: DRAW A Recurrent Neural Network For Image Generation, arXiv:1502.04623](https://arxiv.org/abs/1502.04623)
+
+
 
