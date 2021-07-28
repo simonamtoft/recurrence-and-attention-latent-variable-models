@@ -89,10 +89,10 @@ The three models are trained in the exact same manner, without using a lot of tr
 |Ladder VAE         | -124.12   | 24.98 | 99.14 |
 |DRAW Base Attention| -85.43    | 25.88 | 59.55 |
 
-|Test| ELBO  | KL | Reconstruction |
+|Test               | ELBO    | KL    | Reconstruction |
 | --- | --- | --- | --- |
-|Standard VAE       | | | |
-|Ladder VAE         |  | | |
+|Standard VAE       | -139.28 | 27.47 | 111.82|
+|Ladder VAE         | -141.71 | 21.33 | 120.38|
 |DRAW Base Attention|  | | |
 
 ### Samples and Reconstructions
