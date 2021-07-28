@@ -108,6 +108,14 @@ The filterbank attention version of the DRAW model is somewhat of a work-in-prog
 In this repo you will find the three different model classes in the models directory, and the necessary training loops for each model is found in the training directory.
 Additionally the attention, encoder and decoder, and other modules used in these models can be found in the layers directory.
 
+In order to reproduce the results, it should be fairly simple to run the training of the models by using either of the following scripts:
+`
+python run_vae.py
+python run_lvae.py
+python run_draw.py
+`
+In order to change the size of a model, simply change the config dict inside these scripts.
+
 ## References
 Diederik P. Kingma & Max Welling: An Introduction to Variational Autoencoders, [arXiv:1906.02691](https://arxiv.org/abs/1906.02691)
 
