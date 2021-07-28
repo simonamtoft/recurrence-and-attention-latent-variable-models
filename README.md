@@ -109,11 +109,9 @@ In this repo you will find the three different model classes in the models direc
 Additionally the attention, encoder and decoder, and other modules used in these models can be found in the layers directory.
 
 In order to reproduce the results, it should be fairly simple to run the training of the models by using either of the following scripts:
-`
-python run_vae.py
-python run_lvae.py
-python run_draw.py
-`
+
+`python run_vae.py` or `python run_lvae.py` or `python run_draw.py`
+
 In order to change the size of a model, simply change the config dict inside these scripts.
 
 ## References
