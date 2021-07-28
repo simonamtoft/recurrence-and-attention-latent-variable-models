@@ -109,13 +109,13 @@ In this repo you will find the three different model classes in the models direc
 Additionally the attention, encoder and decoder, and other modules used in these models can be found in the layers directory.
 
 ## References
-[Diederik P. Kingma & Max Welling: An Introduction to Variational Autoencoders, arXiv:1906.02691](https://arxiv.org/abs/1906.02691)
+Diederik P. Kingma & Max Welling: An Introduction to Variational Autoencoders, [arXiv:1906.02691](https://arxiv.org/abs/1906.02691)
 
-[Carl Doersch: Tutorial on Variational Autoencoders, arXiv:1606.05908](https://arxiv.org/abs/1606.05908)
+Carl Doersch: Tutorial on Variational Autoencoders, [arXiv:1606.05908](https://arxiv.org/abs/1606.05908)
 
-[Casper Kaae Sønderby, Tapani Raiko, Lars Maaløe, Søren Kaae Sønderby & Ole Winther, Ladder Variational Autoencoders, arXiv:1602.02282](https://arxiv.org/abs/1602.02282)
+Casper Kaae Sønderby, Tapani Raiko, Lars Maaløe, Søren Kaae Sønderby & Ole Winther, Ladder Variational Autoencoders, [arXiv:1602.02282](https://arxiv.org/abs/1602.02282)
 
-[Karol Gregor, Ivo Danihelka, Alex Graves, Danilo Jimenez Rezende & Daan Wierstra: DRAW A Recurrent Neural Network For Image Generation, arXiv:1502.04623](https://arxiv.org/abs/1502.04623)
+Karol Gregor, Ivo Danihelka, Alex Graves, Danilo Jimenez Rezende & Daan Wierstra: DRAW A Recurrent Neural Network For Image Generation, [arXiv:1502.04623](https://arxiv.org/abs/1502.04623)
 
 
 
