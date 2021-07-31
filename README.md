@@ -93,7 +93,7 @@ The three models are trained in the exact same manner, without using a lot of tr
 | --- | --- | --- | --- |
 |Standard VAE       | -123.81 | 25.13 | 98.68|
 |Ladder VAE         | -123.43 | 25.06 | 98.37|
-|DRAW Base Attention|  | | |
+|DRAW Base Attention| -85.3   | 26.01 | 59.28|
 
 ### Samples and Reconstructions
 ![alt text](https://github.com/simonamtoft/ml-library/blob/main/results/images.png?raw=true)
