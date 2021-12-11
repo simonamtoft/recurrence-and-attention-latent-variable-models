@@ -8,6 +8,7 @@ import torch.nn as nn
 from .train_utils import lambda_lr, log_images, DeterministicWarmup
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+SAVE_NAME = 'draw_model.pt'
 
 
 def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
@@ -123,9 +124,59 @@ def train_draw(model, config, train_loader, val_loader, project_name='DRAW'):
             # Log images to wandb
             log_images(x_hat, x_sample, epoch)
     
-    # Save final model
-    torch.save('draw_model.pt')
-    wandb.save('draw_model.pt')
+    # TODO: Save final model. 
+    # Currently there is an error with this although it works for the VAE.
+    # torch.save(model, SAVE_NAME)
+    # wandb.save(SAVE_NAME)
 
     # Finalize training
     wandb.finish()
+
+    # Report test numbers
+    from torchvision.transforms import Compose, ToTensor, Lambda 
+    from torch.utils.data import DataLoader
+    from torchvision.datasets import MNIST
+    def tmp_lambda(x):
+        return torch.bernoulli(x)
+
+    data_transform = Compose([
+        ToTensor(),
+        Lambda(tmp_lambda)
+    ])
+
+    # Download test MNIST data
+    test_data = MNIST('./', train=False, download=True, transform=data_transform)
+
+    # Setup data loader
+    kwargs = {'num_workers': 4, 'pin_memory': True} if torch.cuda.is_available() else {}
+    test_loader = DataLoader(
+        test_data,
+        batch_size=1,
+        shuffle=True,
+        **kwargs
+    )
+
+    model.eval()
+    with torch.no_grad():
+        draw_recon = []
+        draw_kl = []
+        draw_elbo = []
+        for x, i in tqdm(test_loader, disable=True):
+            batch_size = x.size(0)
+            x = x.view(batch_size, -1).to(device)
+
+            # DRAW: Pass through model
+            x_hat, kld = model(x)
+            x_hat = torch.sigmoid(x_hat)
+            reconstruction = torch.mean(bce_loss(x_hat, x).sum(1))
+            kl = torch.mean(kld.sum(1))
+            loss = reconstruction + kl
+
+            draw_recon.append(reconstruction.item())
+            draw_kl.append(kl.item())
+            draw_elbo.append(-loss.item())
+
+        print("\nDRAW")
+        print(f"Recon: {torch.tensor(draw_recon).mean()}")
+        print(f"KL: {torch.tensor(draw_kl).mean()}")
+        print(f"ELBO: {torch.tensor(draw_elbo).mean()}")

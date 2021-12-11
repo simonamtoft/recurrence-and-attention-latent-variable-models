@@ -42,7 +42,6 @@ data_transform = Compose([
 
 # Download binarized MNIST data
 train_data = MNIST('./', train=True, download=True, transform=data_transform)
-test_data = MNIST('./', train=False, download=True, transform=data_transform)
 
 # split into training and validation sets
 train_set, val_set = torch.utils.data.random_split(train_data, [50000, 10000])

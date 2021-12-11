@@ -10,6 +10,7 @@ from .train_utils import log_images, lambda_lr, DeterministicWarmup
 from .losses import bce_loss
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+SAVE_NAME = 'vae_model.pt'
 
 
 def train_vae(model, config, train_loader, val_loader, project_name='vae'):
@@ -83,10 +84,10 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
 
         # Validation epoch
         model.eval()
-        elbo_val = []
-        kld_val = []
-        recon_val = []
         with torch.no_grad():
+            elbo_val = []
+            kld_val = []
+            recon_val = []
             for x, _ in iter(val_loader):
                 batch_size = x.size(0)
 
@@ -123,8 +124,8 @@ def train_vae(model, config, train_loader, val_loader, project_name='vae'):
         log_images(x_hat, x_sample, epoch)
     
     # Save final model
-    torch.save('vae_model.pt')
-    wandb.save('vae_model.pt')
+    torch.save(model, SAVE_NAME)
+    wandb.save(SAVE_NAME)
 
     # Finalize training
     wandb.finish()

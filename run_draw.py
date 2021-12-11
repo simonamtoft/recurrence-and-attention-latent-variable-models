@@ -1,26 +1,12 @@
 import torch
 from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
-from torchvision import transforms
+from torchvision.transforms import Compose, ToTensor, Lambda
 
 from models import DRAW
 from training import train_draw
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-
-# Download binarized MNIST data
-def tmp_lambda(x):
-    return torch.bernoulli(x)
-
-mnist_data = MNIST(
-    './', 
-    download=True,
-    transform=transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Lambda(tmp_lambda)
-    ])
-)
 
 # Define config
 config = {
@@ -40,8 +26,20 @@ config = {
     'kl_warmup': True,
 }
 
+# Define transformation
+def tmp_lambda(x):
+    return torch.bernoulli(x)
+
+data_transform = Compose([
+    ToTensor(),
+    Lambda(tmp_lambda)
+])
+
+# Download binarized MNIST data
+train_data = MNIST('./', download=True, transform=data_transform)
+
 # split into training and validation sets
-train_set, val_set = torch.utils.data.random_split(mnist_data, [50000, 10000])
+train_set, val_set = torch.utils.data.random_split(train_data, [50000, 10000])
 
 # Setup data loader
 kwargs = {'num_workers': 4, 'pin_memory': True} if torch.cuda.is_available() else {}

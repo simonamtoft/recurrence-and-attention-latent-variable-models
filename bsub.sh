@@ -22,3 +22,4 @@ source venv/bin/activate
 # python run_vae.py
 # python run_lvae.py
 python run_draw.py
+# python compute_test.py

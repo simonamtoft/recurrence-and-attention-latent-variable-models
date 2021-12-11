@@ -1,8 +1,7 @@
 import torch
 from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
-from torchvision.transforms import Compose, ToTensor, \
-    Lambda, RandomAffine
+from torchvision.transforms import Compose, ToTensor, Lambda
 
 from models import VariationalAutoencoder
 from training import train_vae
@@ -36,13 +35,12 @@ data_transform = Compose([
 ])
 
 # Download binarized MNIST data
-train_data = MNIST('./', train=True, download=True,transform=data_transform)
-test_data = MNIST('./', train=False, download=True,transform=data_transform)
+train_data = MNIST('./', train=True, download=True, transform=data_transform)
 
 # split into training and validation sets
 train_set, val_set = torch.utils.data.random_split(train_data, [50000, 10000])
 
-# Setup data loader
+# Setup data loaders
 kwargs = {'num_workers': 4, 'pin_memory': True} if torch.cuda.is_available() else {}
 train_loader = DataLoader(
     train_set,
