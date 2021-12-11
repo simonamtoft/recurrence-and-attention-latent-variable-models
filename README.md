@@ -69,7 +69,9 @@ Finally, we define the read and write operations with the attention mechanism
 Where <img src="https://latex.codecogs.com/svg.image?w_t" title="w_t" /> is the N x N writing patch emitted by the decoder.
 
 ## Results
-I've trained and compared the results for the standard VAE, the Ladder VAE and the DRAW model with base attention. Below the final value of the ELBO, KL and Reconstruction metrics are reported for both the train, validation and test set. Additionally the loss plots for training and validation is shown, and finally some reconstruction and samples from the three different models are shown. The dataset used is the standard [torchvision MNIST dataset](https://pytorch.org/vision/stable/datasets.html), which is transformed to be in binarized form.
+The standard VAE, Ladder VAE and DRAW model with base attention have been trained on the standard [torchvision MNIST dataset](https://pytorch.org/vision/stable/datasets.html), which is transformed to be in binarized form. Below the final value of the ELBO, KL and Reconstruction metrics are reported for both the train, validation and test set. Additionally the loss plots for training and validation is shown, and finally some reconstruction and samples from the three different models are shown.
+
+The three models are trained in the exact same manner, without using a lot of tricks to improve upon their results. For all models KL-annealing is used over the first 50 epochs. Additionally, every model uses learning rate decay that starts after 200 epochs and is around halved at the end of training. To check the model parameters used, inspect the config dict in the three different training files.
 
 ### Loss Plots
 ![alt text](https://github.com/simonamtoft/ml-library/blob/main/results/loss%20plots.png?raw=true)
@@ -87,19 +89,35 @@ I've trained and compared the results for the standard VAE, the Ladder VAE and t
 |Ladder VAE         | -124.12   | 24.98 | 99.14 |
 |DRAW Base Attention| -85.43    | 25.88 | 59.55 |
 
-|Test| ELBO  | KL | Reconstruction |
+|Test               | ELBO    | KL    | Reconstruction |
 | --- | --- | --- | --- |
-|Standard VAE       | | | |
-|Ladder VAE         |  | | |
-|DRAW Base Attention|  | | |
+|Standard VAE       | -123.81 | 25.13 | 98.68|
+|Ladder VAE         | -123.43 | 25.06 | 98.37|
+|DRAW Base Attention| -85.3   | 26.01 | 59.28|
 
 ### Samples and Reconstructions
 ![alt text](https://github.com/simonamtoft/ml-library/blob/main/results/images.png?raw=true)
 
-## Comment on DRAW with Filterbank Attention
+## Discussion
+From the results it is clear that the implemented DRAW model performs better than the standard VAE. However, it is also seen that the Ladder VAE has kind of collapsed into the standard VAE, providing far worse results than in the original paper. This can be due to multiple things. First of all the model might not be exactly identical to the proposed model regarding the implementation itself and number and size of layers. Secondly, all the three models are trained in exactly the same manner, without using a lot of tricks to improve the training of the Ladder VAE, which was done in the paper.
+
+### Comment on DRAW with Filterbank Attention
 The filterbank attention version of the DRAW model is somewhat of a work-in-progress. It [seems to be implemented correctly](https://github.com/simonamtoft/ml-library/blob/main/notebooks/A%20Look%20at%20Attention.ipynb) using a batch size of one, but very slow computationally. Additionally when running only with a batch size of one, each epoch takes too long to make it feasible. In order to make this model able to work in practice one would have to optimize it for batch sizes larger than one and improve the computational speed.
 
 ## Repo Structure
 In this repo you will find the three different model classes in the models directory, and the necessary training loops for each model is found in the training directory.
 Additionally the attention, encoder and decoder, and other modules used in these models can be found in the layers directory.
+
+In order to reproduce the results, first make sure you have torch installed and all the required packages specified in `requirements.txt`, it should then be fairly simple to run the training of each of the models by using the appropriate script: `python run_vae.py` or `python run_lvae.py` or `python run_draw.py`. In order to change any model or training parameters, simply change the config dict inside these scripts.
+
+## References
+Diederik P. Kingma & Max Welling: An Introduction to Variational Autoencoders, [arXiv:1906.02691](https://arxiv.org/abs/1906.02691)
+
+Carl Doersch: Tutorial on Variational Autoencoders, [arXiv:1606.05908](https://arxiv.org/abs/1606.05908)
+
+Casper Kaae Sønderby, Tapani Raiko, Lars Maaløe, Søren Kaae Sønderby & Ole Winther, Ladder Variational Autoencoders, [arXiv:1602.02282](https://arxiv.org/abs/1602.02282)
+
+Karol Gregor, Ivo Danihelka, Alex Graves, Danilo Jimenez Rezende & Daan Wierstra: DRAW A Recurrent Neural Network For Image Generation, [arXiv:1502.04623](https://arxiv.org/abs/1502.04623)
+
+
 
